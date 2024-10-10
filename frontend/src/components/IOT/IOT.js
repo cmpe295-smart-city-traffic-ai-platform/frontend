@@ -11,7 +11,10 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Col from "react-bootstrap/esm/Col";
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
+import Image from 'react-bootstrap/Image';
 import axios from "axios";
+
+import iotImage from "../../images/iotImage.png";
 
 // modal reference: https://react-bootstrap.netlify.app/docs/components/modal
 const IOT = () => {
@@ -99,7 +102,8 @@ const IOT = () => {
         <Container fluid="lg">
             <Row className="mt-3 mb-3">
                 <Col align="left">
-                    <h2> IoT Station Management </h2>
+                    <h2> IoT Station Management</h2>
+                    <Image src={iotImage} roundedCircle width={100} height={100}/> 
                 </Col>
             </Row>
             
@@ -114,6 +118,7 @@ const IOT = () => {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
+                                <th>IoT</th>
                                 <th>Device ID</th>
                                 <th>Name</th>
                                 <th>Location</th>
@@ -191,13 +196,13 @@ const IOT = () => {
             </Modal>
 
             <ToastContainer position="bottom-end">
-                <Toast className="mr-3 mb-3" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
+                <Toast className="m-3 text-white" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
                     {successMessage}
                 </Toast>
             </ToastContainer>
 
             <ToastContainer position="bottom-end">
-                <Toast className="mr-3 mb-3" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
+                <Toast className="m-3 text-white" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
                     {errorMessage}
                 </Toast>
             </ToastContainer>

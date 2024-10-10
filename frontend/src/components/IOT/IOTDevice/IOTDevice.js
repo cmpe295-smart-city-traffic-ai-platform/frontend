@@ -9,6 +9,9 @@ import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
+import Image from 'react-bootstrap/Image';
+
+import iotImage from "../../../images/iotImage.png";
 
 
 // modal reference: https://react-bootstrap.netlify.app/docs/components/modal
@@ -18,7 +21,7 @@ const IOTDevice = (props) => {
     const [updatedDeviceLocation, setUpdatedDeviceLocation] = useState(null);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("")
+    const [successMessage, setSuccessMessage] = useState("IoT Device Deleted Successfully")
     const [errorMessage, setErrorMessage] = useState("")
 
     const handleClose = () => setShowModal(false);
@@ -31,7 +34,7 @@ const IOTDevice = (props) => {
                 name: null,
                 location: null
             });
-            setSuccessMessage("Device status updated successfully");
+            setSuccessMessage("IoT status updated successfully");
             setShowSuccessAlert(true);
             // refresh devices after updates
             props.getDevices();
@@ -63,7 +66,7 @@ const IOTDevice = (props) => {
 
     const deleteIotDevice = async () => {
         try {
-            const response = await axios.delete(`/api/v1/iot/${props.userId}/${props.deviceId}`);
+            await axios.delete(`/api/v1/iot/${props.userId}/${props.deviceId}`);
             setSuccessMessage(`IoT Device Deleted Successfully`)
             // refresh devices after updates
             props.getDevices();
@@ -86,6 +89,7 @@ const IOTDevice = (props) => {
     return(
         <>
             <tr>
+                <td><Image src={iotImage} width={50} height={50} roundedCircle/> </td>
                 <td>{props.deviceId}</td>
                 <td>{props.name}</td>
                 <td>{props.location}</td>
@@ -136,13 +140,13 @@ const IOTDevice = (props) => {
             </Modal>
 
             <ToastContainer position="bottom-end">
-                <Toast className="mr-3 mb-3" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
+                <Toast className="m-3 text-white" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
                     {successMessage}
                 </Toast>
             </ToastContainer>
 
             <ToastContainer position="bottom-end">
-                <Toast className="mr-3 mb-3" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
+                <Toast className="m-3 text-white" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
                     {errorMessage}
                 </Toast>
             </ToastContainer>
