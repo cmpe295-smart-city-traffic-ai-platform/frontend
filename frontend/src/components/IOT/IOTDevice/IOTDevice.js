@@ -5,15 +5,24 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Toast from 'react-bootstrap/Toast';
+import ToastContainer from 'react-bootstrap/ToastContainer';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 
+
 // modal reference: https://react-bootstrap.netlify.app/docs/components/modal
 const IOTDevice = (props) => {
-    const [show, setShow] = useState(false);
+    const [show, setShowModal] = useState(false);
+    const [updatedDeviceName, setUpdatedDeviceName] = useState(null);
+    const [updatedDeviceLocation, setUpdatedDeviceLocation] = useState(null);
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
 
     const toggleActiveStatus = async () => {
         try {
@@ -22,24 +31,57 @@ const IOTDevice = (props) => {
                 name: null,
                 location: null
             });
-            console.log(response);
-            console.log(`Device ID ${props.deviceId} updated successfully`);
+            setSuccessMessage("Device status updated successfully");
+            setShowSuccessAlert(true);
+            // refresh devices after updates
             props.getDevices();
         } catch (error) {
-            console.error(`"Error updating active status: ${error}`);
+            console.error(`"Error updating active status: ${error.respone.data.errorMessage}`);
+            setErrorMessage("Error updating device status");
+            setShowErrorAlert(true);
         }
+    }
+
+    const updateDevice = async () => {
+        try {
+            const response = await axios.put(`/api/v1/iot/${props.userId}/${props.deviceId}`, {
+                active: null,
+                name: updatedDeviceName,
+                location: updatedDeviceLocation
+            });
+            setSuccessMessage(`IoT Device Updated Successfully`)
+            setShowSuccessAlert(true)
+            // refresh devices after updates
+            props.getDevices();
+        } catch (error) {
+            console.error(`Error updating device: ${error.response.data.errorMessage}`);
+            setErrorMessage("Error updating device");
+            setShowErrorAlert(true);
+        }
+        handleClose();
     }
 
     const deleteIotDevice = async () => {
         try {
             const response = await axios.delete(`/api/v1/iot/${props.userId}/${props.deviceId}`);
-            console.log(response);
-            console.log(`Device ID ${props.deviceId} deleted successfully`);
+            setSuccessMessage(`IoT Device Deleted Successfully`)
+            // refresh devices after updates
             props.getDevices();
         } catch (error) {
-            console.error(`"Error deleting IOT device: ${error}`);
+            console.error(`Error deleting IoT device: ${error}`);
+            setErrorMessage("Error deleting IoT device");
+            setShowErrorAlert(true);
         }
+        handleClose();
     }
+
+    const handleDeviceNameChange = (event) => {
+        setUpdatedDeviceName(event.target.value);
+    };
+
+    const handleDeviceLocationChange = (event) => {
+        setUpdatedDeviceLocation(event.target.value);
+    };
 
     return(
         <>
@@ -66,6 +108,7 @@ const IOTDevice = (props) => {
                             type="text"
                             placeholder="Enter new device name"
                             autoFocus
+                            onChange={handleDeviceNameChange}
                         />
                     </Form.Group>
                     <Form.Group
@@ -73,7 +116,12 @@ const IOTDevice = (props) => {
                         controlId="location.ControlInput2"
                     >
                         <Form.Label> Location <LocationOnIcon/> </Form.Label>
-                        <Form.Control type="text" placeholder="(e.g. 37.417981,-121.972547)" autoFocus />
+                        <Form.Control 
+                            type="text" 
+                            placeholder="(e.g. 37.417981,-121.972547)" 
+                            autoFocus 
+                            onChange={handleDeviceLocationChange}
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -81,11 +129,23 @@ const IOTDevice = (props) => {
                 <Button variant="secondary" onClick={handleClose}>
                 Close
                 </Button>
-                <Button variant="primary" onClick={handleClose}>
+                <Button variant="primary" onClick={updateDevice}>
                 Save Changes
                 </Button>
             </Modal.Footer>
             </Modal>
+
+            <ToastContainer position="bottom-end">
+                <Toast className="mr-3 mb-3" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
+                    {successMessage}
+                </Toast>
+            </ToastContainer>
+
+            <ToastContainer position="bottom-end">
+                <Toast className="mr-3 mb-3" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
+                    {errorMessage}
+                </Toast>
+            </ToastContainer>
         </>
     )
 }

@@ -9,6 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Col from "react-bootstrap/esm/Col";
+import Toast from 'react-bootstrap/Toast';
+import ToastContainer from 'react-bootstrap/ToastContainer';
 import axios from "axios";
 
 // modal reference: https://react-bootstrap.netlify.app/docs/components/modal
@@ -22,6 +24,22 @@ const IOT = () => {
     const [deviceLocation, setDeviceLocation] = useState("");
     const [deviceActive, setDeviceActive] = useState(true);
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
+
+    const handleDeviceNameChange = (event) => {
+        setDeviceName(event.target.value);
+    };
+
+    const handleDeviceLocationChange = (event) => {
+        setDeviceLocation(event.target.value);
+    };
+
+    const handleDeviceActiveChange = () => {
+        setDeviceActive(!deviceActive);
+    };
 
     // modal methods
     const handleClose = () => setShow(false);
@@ -35,7 +53,6 @@ const IOT = () => {
             },
           });
           const iotDevices = response.data;
-          console.log(iotDevices);
           setIotDevices(iotDevices);
         } catch (error) {
           console.error("Error getting the IoT Devices");
@@ -51,18 +68,32 @@ const IOT = () => {
                 active: deviceActive
             });
             const createdIotDevice = response.data;
-            console.log(`Created device: ${createdIotDevice}`);
+            console.log("Created device: " + createdIotDevice);
+            setSuccessMessage("Device created successfully");
+            setShowSuccessAlert(true)
             handleClose();
             getDevices();
           } catch (error) {
-            console.error("Error creating IoT device");
+            console.error(`Error creating IoT device: ${error}`);
+            setErrorMessage("Error creating IoT device")
+            setShowErrorAlert(true);
           }
     }
 
 
+    // load in user iot devices
     useEffect(() => {
         getDevices();
-      }, []);
+    },[]);
+
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
 
     return (
         <Container fluid="lg">
@@ -100,8 +131,8 @@ const IOT = () => {
                                     deviceId={device.id} 
                                     name={device.name}
                                     location={device.location}
-                                    createdAt={device.createdAt}
-                                    updatedAt={device.updatedAt}
+                                    createdAt={dateFormatter.format(new Date(device.createdAt))}
+                                    updatedAt={dateFormatter.format(new Date(device.updatedAt))}
                                     active={device.active}
                                     userId={userId}
                                     getDevices={getDevices}
@@ -124,6 +155,7 @@ const IOT = () => {
                             type="text"
                             placeholder="Device name"
                             autoFocus
+                            onChange={handleDeviceNameChange}
                         />
                     </Form.Group>
                     <Form.Group
@@ -131,13 +163,19 @@ const IOT = () => {
                         controlId="location.ControlInput2"
                     >
                         <Form.Label>Location </Form.Label> <LocationOnIcon/> 
-                        <Form.Control type="text" placeholder="(e.g. 37.417981,-121.972547)" autoFocus />
+                        <Form.Control 
+                            type="text" 
+                            placeholder="(e.g. 37.417981,-121.972547)" 
+                            autoFocus
+                            onChange={handleDeviceLocationChange} 
+                        />
                     </Form.Group>
                     <Form.Group>
                         <Form.Check
                             type="checkbox"
                             label="Active"
-                            defaultChecked
+                            onChange={handleDeviceActiveChange}
+                            checked={deviceActive}
                         />
                     </Form.Group>
                 </Form>
@@ -151,6 +189,18 @@ const IOT = () => {
                 </Button>
             </Modal.Footer>
             </Modal>
+
+            <ToastContainer position="bottom-end">
+                <Toast className="mr-3 mb-3" bg="success" onClose={() => setShowSuccessAlert(false)} show={showSuccessAlert} delay={3000} autohide>
+                    {successMessage}
+                </Toast>
+            </ToastContainer>
+
+            <ToastContainer position="bottom-end">
+                <Toast className="mr-3 mb-3" bg="danger" onClose={() => setShowErrorAlert(false)} show={showErrorAlert} delay={3000} autohide>
+                    {errorMessage}
+                </Toast>
+            </ToastContainer>
         </Container>
     )
 }
