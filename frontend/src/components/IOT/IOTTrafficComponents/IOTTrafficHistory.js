@@ -5,8 +5,8 @@ import { Container } from "@mui/material";
 import Spinner from 'react-bootstrap/Spinner';
 
 const IOTTrafficHistory = (props) => {
-    // TODO use device id passed to component
-    const [deviceId, setDeviceId] = useState("b1a79cb2-dfb8-4680-9ebb-3604fd37db85");
+    // use props.deviceId, pass in deviceIdNo from parent component (e.g. when clicked on in map)
+    // const [deviceId, setDeviceId] = useState("b1a79cb2-dfb8-4680-9ebb-3604fd37db85");
     const [speedHistoryValues, setSpeedHistoryValues] = useState([]);
     const [timestampHistoryValues, setTimestampHistoryValues] = useState([]);
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -18,7 +18,7 @@ const IOTTrafficHistory = (props) => {
     });
     const getTrafficHistory = async () => {
         try {
-          const response = await axios.get(`/api/v1/iot/traffic/history/${deviceId}`, {
+          const response = await axios.get(`/api/v1/iot/traffic/history/${props.deviceId}`, {
             params: {
               limit: 200
             },
@@ -42,7 +42,7 @@ const IOTTrafficHistory = (props) => {
     }, [])
     return(
         <Container>
-            <h4> Traffic Speed History Device ID {deviceId} </h4>
+            <h4> Traffic Speed History Device ID {props.deviceId} </h4>
             {speedHistoryValues.length == 0 ?         
                 <Spinner
                     as="span"

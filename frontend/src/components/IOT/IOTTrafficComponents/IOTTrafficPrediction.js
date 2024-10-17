@@ -5,12 +5,13 @@ import { Container } from "@mui/material";
 import Spinner from 'react-bootstrap/Spinner';
 
 const IOTTrafficPrediction = (props) => {
-    const [deviceIdNo, setDeviceIdNo] = useState("402059");
+    // use props.deviceIdNo, pass in deviceIdNo from parent component (e.g. when clicked on in map)
+    // const [deviceIdNo, setDeviceIdNo] = useState("402059");
     const [speedPredictionValues, setSpeedPredictionValues] = useState([]);
     const [timestampValues, setTimestampValues] = useState([]);
     const getTrafficPrediction= async () => {
         try {
-          const response = await axios.get(`/api/v1/iot/traffic/predictions/${deviceIdNo}`);
+          const response = await axios.get(`/api/v1/iot/traffic/predictions/${props.deviceIdNo}`);
           const trafficPredictionData = response.data;
           setSpeedPredictionValues(trafficPredictionData.speedPredictionValues);
           setTimestampValues(trafficPredictionData.predictionTimestamps);
@@ -24,7 +25,7 @@ const IOTTrafficPrediction = (props) => {
     }, [])
     return(
         <Container>
-            <h4> Traffic Speed Prediction Device ID No. {deviceIdNo} </h4>
+            <h4> Traffic Speed Prediction Device ID No. {props.deviceIdNo} </h4>
             {speedPredictionValues.length === 0 ? 
                 <Spinner
                     as="span"
