@@ -24,7 +24,15 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 
-
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import {red} from '@mui/material/colors';
+//Since dashboard backend simulates getting the data from the other services
+//In Progress: Need to add button so user can select which devices to only show
+//ex radio button  iot, cctv, drone, 
 /*
 export const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, ...advancedMarkerProps } = props;
@@ -79,6 +87,8 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [searchDevice, setSearchDevice] = useState("");
   const [deviceName, setDeviceName] = useState("");
+  const [allDevices, setAllDevices] = useState([]);
+  const [selectedValue, setSelectedValue] = useState('a');
 
   //Google Map variables
   const [hoverId, setHoverId] = useState(null);
@@ -91,10 +101,13 @@ const Home = () => {
   const markerRefs = useRef({});
   const onMouseEnter = useCallback((id) => setHoverId(id), []);
   const onMouseLeave = useCallback(() => setHoverId(null), []);
+  
   const onMarkerClick = useCallback(
     (id, marker) => {
+      //for iot service
       const device = iotDevices.find((iot) => iot.id === id);
-
+      //for dashboard service
+      //const device = allDevices.find((a) => a.deviceId === id);
       setSelectedId(id);
       setSelectedDevice(device);
       if (marker) {
@@ -106,7 +119,10 @@ const Home = () => {
         setInfoWindowShown((isShown) => !isShown);
       }
     },
+    //for iot service
     [selectedId, iotDevices]
+    //for dashboard service
+    //[selectedId, allDevices]
   );
   //when user clicks map, close any info windows
   const onMapClick = useCallback(() => {
@@ -128,8 +144,10 @@ const Home = () => {
   const handleSearchSubmit = (event) => {
     event.preventDefault();
     setDeviceName(searchDevice);
-
+    //for iot service
     const device = iotDevices.find((iot) => iot.id === searchDevice);
+    //for dashboard service
+    //const device = allDevices.find((a) => a.deviceId === searchDevice);
     if (device) {
       //setSelectedId(device.id)
       //setSelectedDevice(device)
@@ -137,9 +155,9 @@ const Home = () => {
       //setInfoWindowShown(true);
 
       //console.log("Refs",markerRefs)
-      const marker = markerRefs.current[device.id];
+      const marker = markerRefs.current[device.deviceId];
       //console.log("Marker: ",marker)
-      onMarkerClick(device.id, marker);
+      onMarkerClick(device.deviceId, marker);
     } else {
       alert("Device not found");
     }
@@ -148,46 +166,47 @@ const Home = () => {
   const setMarkerRef = (marker, id) => {
     markerRefs.current[id] = marker;
   };
+
+  const handleRadioValueChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+  ///dashboard service backend
   /*
     useEffect(() => {
-        ///get users 
-        
-        axios.get("http://localhost:8080/api/dashboard/users")
-            .then((res)=> {
-                console.log(res.data);
-                setUsers(res.data);
-                }).catch(error => {
-                console.error('Error getting users', error);
-               });
-        
-        //get drones 
-        axios.get("http://localhost:8080/api/dashboard/drone")
-            .then((res)=> {
-                console.log(res.data);
-                setDroneDevices(res.data);
-                }).catch(error => {
-                console.error('Error getting drones', error);
-               });
-         
-        //get iot 
-        axios.get("http://localhost:8080/api/dashboard/iot")
-            .then((res)=> {
-                console.log(res.data);
-                setIotDevices(res.data);
-                }).catch(error => {
-                console.error('Error getting iot devices', error);
-               });
-         
-        //get cctv 
-        axios.get("http://localhost:8080/api/dashboard/cctv")
-            .then((res)=> {
-                console.log(res.data);
-                setCctvDevices(res.data);
-                }).catch(error => {
-                console.error('Error getting users', error);
-               });
-        
-        }, []);*/
+      const getAllDevicesData = async () => {
+      try {
+        const [response1, response2, response3] = await Promise.all([
+          axios.get("http://localhost:8080/api/dashboard/iot"),
+          axios.get("http://localhost:8080/api/dashboard/cctv"),
+          axios.get("http://localhost:8080/api/dashboard/drone"),
+        ]);
+
+        const mergeAllDevices = [
+          ...response1.data,
+          ...response2.data,
+          ...response3.data
+        ]
+
+        const formatedDevices = mergeAllDevices
+          .sort((a, b) => b.latitude - a.latitude)
+          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
+        setAllDevices(formatedDevices);
+        setZIndexSelected(formatedDevices.length);
+        setZIndexHover(formatedDevices.length + 1);
+        console.log(formatedDevices)
+      } catch (error) {
+        console.error("Error getting the IoT Devices");
+      }
+    };
+    getAllDevicesData();
+    
+    
+    //setAllDevices([...iotDevices, ...cctvDevices, ...droneDevices]);
+    //    console.log(allDevices);
+        }, []);
+      */
+  ///IOT SESRVICE BACKEND
+      
   useEffect(() => {
     const getDevices = async () => {
       try {
@@ -211,6 +230,7 @@ const Home = () => {
           })
           .sort((a, b) => b.latitude - a.latitude)
           .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
+          console.log(formatedDevices);
         setIotDevices(formatedDevices);
         setZIndexSelected(formatedDevices.length);
         setZIndexHover(formatedDevices.length + 1);
@@ -220,7 +240,10 @@ const Home = () => {
     };
     getDevices();
   }, []);
+  
 
+  //IOT SERVICE TESTING
+  
   return (
     <div>
       <h1>Home Page</h1>
@@ -269,17 +292,6 @@ const Home = () => {
               zIndex = zIndexSelected;
             }
             return (
-              /*
-            <AdvancedMarkerWithRef
-              key={iot.id}
-              iot={iot}
-              zIndex={zIndex}
-              onMarkerClick={onMarkerClick}
-              onMouseEnter={onMouseEnter}
-              onMouseLeave={onMouseLeave}
-              hoverId={hoverId}
-              selectedId={selectedId}
-            />*/
               <AdvancedMarkerWithRef
                 key={iot.id}
                 zIndex={zIndex}
@@ -300,7 +312,7 @@ const Home = () => {
               >
                 {iot.active.toString() === "true" ? (
                   <Pin
-                    background={"#FBBC04 "}
+                    background={"#03AC13"}
                     glyphColor={"#000"}
                     borderColor={"#000"}
                   />
@@ -327,120 +339,161 @@ const Home = () => {
               <p>Created: {selectedDevice.createdAt}</p>
             </InfoWindow>
           )}
-          {/*
-            {iotDevices.map((iot, index) => {
+          
+    
+        </Map>
+      </APIProvider>
+    </div>
+  );
+};
 
-            let zIndex = iot.zIndex;
+//DASHBOARD TESTING
+/*
+return (
+  <div>
+    <h1>Home Page</h1>
+    <Paper
+      component="form"
+      sx={{
+        p: "2px 4px",
+        display: "flex",
+        alignItems: "center",
+        width: 400,
+        borderRadius: 28,
+      }}
+      onSubmit={handleSearchSubmit}
+    >
+      <InputBase
+        sx={{ ml: 1, flex: 1 }}
+        placeholder="Search Device"
+        inputProps={{ "aria-label": "search device google maps" }}
+        onChange={handleSearchChange}
+      />
+      <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+        <SearchIcon />
+      </IconButton>
+    </Paper>
+    {deviceName}
+    <FormControl>
+        <FormLabel id="select-device-radio-buttons-group-label">
+          <RadioGroup
+            row
+            aria-labelledby="select-device-radio-buttons-group-label"
+            name="select-device-radio-button-group"
+          >
+            <FormControlLabel 
+              checked={selectedValue === 'a'}
+              onChange={handleRadioValueChange}
+              value="a"
+              label="IOT STATIONS"
+              color = "primary"
+              control={<Radio />}  
+            />
+            <FormControlLabel
+              checked={selectedValue === 'b'}
+              onChange={handleRadioValueChange}              
+              value="b"              
+              label="CCTV"              
+                           
+              control={<Radio color = "secondary"/>}                            
+            />
+            <FormControlLabel
+              checked={selectedValue === 'c'}
+              onChange={handleRadioValueChange}              
+              value="c"              
+              label="DRONES"                          
+              control={<Radio color="success"/>}                            
+            />
+            <FormControlLabel
+              checked={selectedValue === 'd'}
+              onChange={handleRadioValueChange}              
+              value="d"              
+              label="ALL"              
+              color = "secondary"              
+              control={<Radio sx={{
+                
+                '&.Mui-checked': {
+                  color: red[600],
+                },
+              }}/>}                            
+            />
+          </RadioGroup>
+        </FormLabel>
+    </FormControl>
+    {selectedValue}
+    <APIProvider
+      apiKey={"AIzaSyCr0HuZEsogX24b32Nizgh2G_zGE9JxykE"}
+      libraries={["marker"]}
+    >
+      <Map
+        mapId={"1cff2de3380e541c"}
+        style={{ width: "80vw", height: "80vh" }}
+        defaultCenter={{ lat: 37.33548, lng: -121.893028 }}
+        defaultZoom={12}
+        gestureHandling={"greedy"}
+        disableDefaultUI
+        onClick={onMapClick}
+      >
+        {allDevices.map((device, index) => {
+          let zIndex = device.zIndex;
 
-            if(hoverId === iot.id){
-              zIndex = zIndexHover;
-            }
-            if (selectedId === iot.id){
-              zIndex = zIndexSelected;
-            }
-            return ( <>
+          if (hoverId === device.deviceId) {
+            zIndex = zIndexHover;
+          }
+          if (selectedId === device.deviceId) {
+            zIndex = zIndexSelected;
+          }
+          return (
             <AdvancedMarkerWithRef
-              key={iot.id}
+              key={device.deviceId}
               zIndex={zIndex}
+              id={device.deviceId}
+              setMarkerRef={setMarkerRef}
               className="custom-maker"
-              position={{ lat: iot.latitude, lng: iot.longitude }}
-              onMarkerClick={(marker) => onMarkerClick(iot.id, marker)}  
-              onMouseEnter={() => onMouseEnter(iot.id)}
+              position={{ lat: device.latitude, lng: device.longitude }}
+              onMarkerClick={(marker) =>
+                onMarkerClick(device.deviceId, markerRefs.current[device.deviceId])
+              }
+              onMouseEnter={() => onMouseEnter(device.deviceId)}
               onMouseLeave={onMouseLeave}
               style={{
-                transform: `scale(${[hoverId, selectedId].includes(iot.id) ? 1.4 : 1})`
+                transform: `scale(${
+                  [hoverId, selectedId].includes(device.deviceId) ? 1.4 : 1
+                })`,
               }}
             >
-              {iot.active.toString() === "true" ? (
+              {device.isActive.toString() === "true" ? (
                 <Pin
-                  background={"#FBBC04 "}
+                  background={"#03AC13"}
                   glyphColor={"#000"}
                   borderColor={"#000"}
                 />
               ) : (
                 <Pin
-                  background={"#C68A00"}
+                  background={"#6F7378"}
                   glyphColor={"#000"}
                   borderColor={"#000"}
                 />
               )}
             </AdvancedMarkerWithRef>
-            </>
-            )
-          })}
-          {infoWindowShown && selectedMarker && selectedDevice &&(
+          );
+        })}
+        {infoWindowShown && selectedMarker && selectedDevice && (
           <InfoWindow
             anchor={selectedMarker}
-            onCloseClick={handleInfowindowCloseClick}>
+            onCloseClick={handleInfowindowCloseClick}
+          >
             <h2>Name: {selectedDevice.name}</h2>
-            <p>ID: {selectedDevice.id}</p>
-            <p>Location: {selectedDevice.location}</p>
-            <p>Created By: {selectedDevice.userId}</p>
-            <p>Status: {selectedDevice.active.toString()}</p>
+            <p>ID: {selectedDevice.deviceId}</p>
+            <p>Location: {selectedDevice.latitude}, {selectedDevice.longitude}</p>
+            <p>Status: {selectedDevice.isActive.toString()}</p>
             <p>Created: {selectedDevice.createdAt}</p>
           </InfoWindow>
         )}
-           */}
-          {/*/
-          
-                {iotDevices.map((iot, index) => (
-                    <AdvancedMarker
-                        key={index}
-                        clickable={true}
-                        position={{lat: iot.latitude ,lng: iot.longitude}}>
-                        <img src={iotImage} width={35} height={35} />  
-                    </AdvancedMarker>
-                ))}
-                {cctvDevices.map((cctv, index) => (
-                    <AdvancedMarker
-                        key={index}
-                        clickable={true}
-                        position={{lat: cctv.latitude ,lng: cctv.longitude}}>
-                            <img src={cctvImage} width={35} height={35} />       
-                    </AdvancedMarker>
-                ))}   
-                {droneDevices.map((drone, index) => (
-                    <AdvancedMarker
-                        key={index}
-                        clickable={true}
-                        position={{lat: drone.latitude ,lng: drone.longitude}}>
-                            <img src={droneImage3} width={70} height={70} />
-                    </AdvancedMarker>
-                ))}
-                
-                */}
-        </Map>
-      </APIProvider>
-
-      <h2>IOT Devices</h2>
-      {iotDevices.length === 0 ? (
-        <p>NO IOT DEVICES</p>
-      ) : (
-        <table>
-          <tr>
-            <th>Device ID</th>
-            <th>Device Number</th>
-            <th>Name</th>
-            <th>location</th>
-            <th>Created By </th>
-            <th>Active</th>
-            <th>Created At</th>
-          </tr>
-          {iotDevices.map((iot, index) => (
-            <tr key={index}>
-              <td>{iot.id}</td>
-              <td>{iot.deviceIdNo}</td>
-              <td>{iot.name}</td>
-              <td>{iot.location}</td>
-              <td>{iot.userId}</td>
-              <td>{iot.active.toString()}</td>
-              <td>{iot.createdAt}</td>
-            </tr>
-          ))}
-        </table>
-      )}
-    </div>
-  );
-};
-
+        
+      </Map>
+    </APIProvider>
+  </div>
+);
+}; */
 export default Home;
