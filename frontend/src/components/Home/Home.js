@@ -422,11 +422,11 @@ return (
     </FormControl>
     {selectedValue}
     <APIProvider
-      apiKey={"AIzaSyCr0HuZEsogX24b32Nizgh2G_zGE9JxykE"}
+      apiKey={""}
       libraries={["marker"]}
     >
       <Map
-        mapId={"1cff2de3380e541c"}
+        mapId={""}
         style={{ width: "80vw", height: "80vh" }}
         defaultCenter={{ lat: 37.33548, lng: -121.893028 }}
         defaultZoom={12}
