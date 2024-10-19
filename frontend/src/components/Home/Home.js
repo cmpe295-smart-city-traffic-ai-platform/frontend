@@ -30,29 +30,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import {red} from '@mui/material/colors';
+import DashboardDrawer from "./Drawer/DashboardDrawer";
 //Since dashboard backend simulates getting the data from the other services
 //In Progress: Need to add button so user can select which devices to only show
 //ex radio button  iot, cctv, drone, 
-/*
-export const AdvancedMarkerWithRef = (props) => {
-  const { children, onMarkerClick, ...advancedMarkerProps } = props;
-  const [markerRef, marker] = useAdvancedMarkerRef();
-
-  return (
-    <AdvancedMarker
-      onClick={() => {
-        if (marker) {
-          onMarkerClick(marker);
-        }
-      }}
-      ref={markerRef}
-      {...advancedMarkerProps}
-    >
-      {children}
-    </AdvancedMarker>
-  );
-};
-*/
 
 const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, setMarkerRef, id, ...advancedMarkerProps } =
@@ -89,6 +70,7 @@ const Home = () => {
   const [deviceName, setDeviceName] = useState("");
   const [allDevices, setAllDevices] = useState([]);
   const [selectedValue, setSelectedValue] = useState('a');
+  const [predictionDevices, setPredictionDevices] = useState([]);
 
   //Google Map variables
   const [hoverId, setHoverId] = useState(null);
@@ -149,15 +131,15 @@ const Home = () => {
     //for dashboard service
     //const device = allDevices.find((a) => a.deviceId === searchDevice);
     if (device) {
-      //setSelectedId(device.id)
-      //setSelectedDevice(device)
-      //setSelectedMarker(markerRefs.current[device.id])
-      //setInfoWindowShown(true);
-
-      //console.log("Refs",markerRefs)
-      const marker = markerRefs.current[device.deviceId];
-      //console.log("Marker: ",marker)
-      onMarkerClick(device.deviceId, marker);
+      //iot
+      const marker = markerRefs.current[device.id];
+      //dashboard
+      //const marker = markerRefs.current[device.deviceId];
+      
+      //iot service
+      onMarkerClick(device.id, marker);
+      //dashboard
+      //onMarkerClick(device.deviceId, marker);
     } else {
       alert("Device not found");
     }
@@ -210,8 +192,9 @@ const Home = () => {
   useEffect(() => {
     const getDevices = async () => {
       try {
+        //get devices from user
         const userId = "d04b59ff-4baf-47e2-986b-7a7d3e73091e";
-        const userId2 = "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e";
+        //const userId2 = "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e";
         const response = await axios.get("http://localhost:8080/api/v1/iot", {
           params: {
             userId: userId,
@@ -230,7 +213,7 @@ const Home = () => {
           })
           .sort((a, b) => b.latitude - a.latitude)
           .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-          console.log(formatedDevices);
+        
         setIotDevices(formatedDevices);
         setZIndexSelected(formatedDevices.length);
         setZIndexHover(formatedDevices.length + 1);
@@ -238,12 +221,37 @@ const Home = () => {
         console.error("Error getting the IoT Devices");
       }
     };
-    getDevices();
+    //getDevices();
+    //GET PREDICTION DEVICES
+    const getPredictionDevices = async() => {
+      try{
+        const response = await axios.get("http://localhost:8080/api/v1/iot/predictionDevices");
+        const formatedDevices = response.data
+          .map((item) => {
+            const [lat, long] = item.location
+              .replace("location:", "")
+              .split(",");
+            return {
+              ...item,
+              latitude: parseFloat(lat),
+              longitude: parseFloat(long),
+            };
+          })
+          .sort((a, b) => b.latitude - a.latitude)
+          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
+        
+        setIotDevices(formatedDevices);
+        setZIndexSelected(formatedDevices.length);
+        setZIndexHover(formatedDevices.length + 1);
+      } catch{
+        console.error("Error getting the IoT PREDICTION Devices");
+      }
+    };
+    //TEST USING PREDICTION DEVICES ONLY
+    getPredictionDevices();
   }, []);
   
-
   //IOT SERVICE TESTING
-  
   return (
     <div>
       <h1>Home Page</h1>
@@ -268,14 +276,61 @@ const Home = () => {
           <SearchIcon />
         </IconButton>
       </Paper>
-      {deviceName}
+      
+      <FormControl>
+        <FormLabel id="select-device-radio-buttons-group-label">
+          <RadioGroup
+            row
+            aria-labelledby="select-device-radio-buttons-group-label"
+            name="select-device-radio-button-group"
+          >
+            <FormControlLabel 
+              checked={selectedValue === 'a'}
+              onChange={handleRadioValueChange}
+              value="a"
+              label="IOT STATIONS"
+              color = "primary"
+              control={<Radio />}  
+            />
+            <FormControlLabel
+              checked={selectedValue === 'b'}
+              onChange={handleRadioValueChange}              
+              value="b"              
+              label="CCTV"              
+                           
+              control={<Radio color = "secondary"/>}                            
+            />
+            <FormControlLabel
+              checked={selectedValue === 'c'}
+              onChange={handleRadioValueChange}              
+              value="c"              
+              label="DRONES"                          
+              control={<Radio color="success"/>}                            
+            />
+            <FormControlLabel
+              checked={selectedValue === 'd'}
+              onChange={handleRadioValueChange}              
+              value="d"              
+              label="ALL"              
+              color = "secondary"              
+              control={<Radio sx={{
+                
+                '&.Mui-checked': {
+                  color: red[600],
+                },
+              }}/>}                            
+            />
+          </RadioGroup>
+        </FormLabel>
+    </FormControl>
+    {selectedValue}
       <APIProvider
         apiKey={""}
         libraries={["marker"]}
       >
         <Map
           mapId={""}
-          style={{ width: "80vw", height: "80vh" }}
+          style={{ width: "100vw", height: "80vh" }}
           defaultCenter={{ lat: 37.33548, lng: -121.893028 }}
           defaultZoom={12}
           gestureHandling={"greedy"}
@@ -337,10 +392,10 @@ const Home = () => {
               <p>Created By: {selectedDevice.userId}</p>
               <p>Status: {selectedDevice.active.toString()}</p>
               <p>Created: {selectedDevice.createdAt}</p>
+              <p>DeviceIdNo: {selectedDevice.deviceIdNo}</p>
+              <DashboardDrawer deviceId={selectedDevice.id} deviceIdNo={selectedDevice.deviceIdNo}/>
             </InfoWindow>
           )}
-          
-    
         </Map>
       </APIProvider>
     </div>
