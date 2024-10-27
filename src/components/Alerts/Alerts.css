@@ -1,0 +1,19 @@
+.alert-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .alert-item.high {
+    background-color: #ffcccc;
+  }
+  
+  .alert-item.medium {
+    background-color: #fff0b3;
+  }
+  
+  .alert-item.low {
+    background-color: #ccffcc;
+  }
+  
