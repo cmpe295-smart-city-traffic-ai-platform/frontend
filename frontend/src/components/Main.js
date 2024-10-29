@@ -8,6 +8,7 @@ import Registration from "./Registration/Registration";
 import IOT from "./IOT/IOT";
 import IOTTrafficHistory from "./IOT/IOTTrafficComponents/IOTTrafficHistory";
 import IOTTrafficPrediction from "./IOT/IOTTrafficComponents/IOTTrafficPrediction";
+import TrafficMap from "./Home/Traffic/TrafficMap";
 
 class Main extends Component {
     render(){
@@ -21,6 +22,7 @@ class Main extends Component {
                 <Route exact path="/iot" component={IOT}/>
                 <Route exact path="/iot/traffichistory" component={IOTTrafficHistory}/>
                 <Route exact path="/iot/trafficprediction" component={IOTTrafficPrediction}/>
+                <Route exact path="/trafficmap" component={TrafficMap}/>
             </div>
         )
     }

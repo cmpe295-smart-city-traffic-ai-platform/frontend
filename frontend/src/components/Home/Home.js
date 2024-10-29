@@ -31,9 +31,10 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import {red} from '@mui/material/colors';
 import DashboardDrawer from "./Drawer/DashboardDrawer";
-//Since dashboard backend simulates getting the data from the other services
-//In Progress: Need to add button so user can select which devices to only show
-//ex radio button  iot, cctv, drone, 
+import IOTTrafficCurrent from "../IOT/IOTTrafficComponents/IOTTrafficCurrent";
+import  Stack  from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+//In Progress: Confifure when user is trafficagent vs client agent
 
 const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, setMarkerRef, id, ...advancedMarkerProps } =
@@ -255,75 +256,77 @@ const Home = () => {
   return (
     <div>
       <h1>Home Page</h1>
-      <Paper
-        component="form"
-        sx={{
-          p: "2px 4px",
-          display: "flex",
-          alignItems: "center",
-          width: 400,
-          borderRadius: 28,
-        }}
-        onSubmit={handleSearchSubmit}
-      >
-        <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder="Search Device"
-          inputProps={{ "aria-label": "search device google maps" }}
-          onChange={handleSearchChange}
-        />
-        <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-          <SearchIcon />
-        </IconButton>
-      </Paper>
-      
-      <FormControl>
-        <FormLabel id="select-device-radio-buttons-group-label">
-          <RadioGroup
-            row
-            aria-labelledby="select-device-radio-buttons-group-label"
-            name="select-device-radio-button-group"
-          >
-            <FormControlLabel 
-              checked={selectedValue === 'a'}
-              onChange={handleRadioValueChange}
-              value="a"
-              label="IOT STATIONS"
-              color = "primary"
-              control={<Radio />}  
-            />
-            <FormControlLabel
-              checked={selectedValue === 'b'}
-              onChange={handleRadioValueChange}              
-              value="b"              
-              label="CCTV"              
-                           
-              control={<Radio color = "secondary"/>}                            
-            />
-            <FormControlLabel
-              checked={selectedValue === 'c'}
-              onChange={handleRadioValueChange}              
-              value="c"              
-              label="DRONES"                          
-              control={<Radio color="success"/>}                            
-            />
-            <FormControlLabel
-              checked={selectedValue === 'd'}
-              onChange={handleRadioValueChange}              
-              value="d"              
-              label="ALL"              
-              color = "secondary"              
-              control={<Radio sx={{
-                
-                '&.Mui-checked': {
-                  color: red[600],
-                },
-              }}/>}                            
-            />
-          </RadioGroup>
-        </FormLabel>
-    </FormControl>
-    {selectedValue}
+      <Stack alignItems="center" direction="row" spacing={60}>
+        <Paper
+          component="form"
+          sx={{
+            p: "2px 4px",
+            display: "flex",
+            alignItems: "center",
+            width: 400,
+            borderRadius: 28,
+          }}
+          onSubmit={handleSearchSubmit}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="Search Device"
+            inputProps={{ "aria-label": "search device google maps" }}
+            onChange={handleSearchChange}
+          />
+          <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+            <SearchIcon />
+          </IconButton>
+        </Paper>
+        
+        <FormControl>
+          <FormLabel id="select-device-radio-buttons-group-label">
+            <RadioGroup
+              row
+              aria-labelledby="select-device-radio-buttons-group-label"
+              name="select-device-radio-button-group"
+            >
+              <FormControlLabel 
+                checked={selectedValue === 'a'}
+                onChange={handleRadioValueChange}
+                value="a"
+                label="IOT STATIONS"
+                color = "primary"
+                control={<Radio />}  
+              />
+              <FormControlLabel
+                checked={selectedValue === 'b'}
+                onChange={handleRadioValueChange}              
+                value="b"              
+                label="CCTV"              
+                            
+                control={<Radio color = "secondary"/>}                            
+              />
+              <FormControlLabel
+                checked={selectedValue === 'c'}
+                onChange={handleRadioValueChange}              
+                value="c"              
+                label="DRONES"                          
+                control={<Radio color="success"/>}                            
+              />
+              <FormControlLabel
+                checked={selectedValue === 'd'}
+                onChange={handleRadioValueChange}              
+                value="d"              
+                label="ALL"              
+                color = "secondary"              
+                control={<Radio sx={{
+                  
+                  '&.Mui-checked': {
+                    color: red[600],
+                  },
+                }}/>}                            
+              />
+            </RadioGroup>
+          </FormLabel>
+      </FormControl>
+      {selectedValue}
+    </Stack>
       <APIProvider
         apiKey={""}
         libraries={["marker"]}
@@ -386,14 +389,20 @@ const Home = () => {
               anchor={selectedMarker}
               onCloseClick={handleInfowindowCloseClick}
             >
-              <h2>Name: {selectedDevice.name}</h2>
-              <p>ID: {selectedDevice.id}</p>
-              <p>Location: {selectedDevice.location}</p>
-              <p>Created By: {selectedDevice.userId}</p>
-              <p>Status: {selectedDevice.active.toString()}</p>
-              <p>Created: {selectedDevice.createdAt}</p>
-              <p>DeviceIdNo: {selectedDevice.deviceIdNo}</p>
-              <DashboardDrawer deviceId={selectedDevice.id} deviceIdNo={selectedDevice.deviceIdNo}/>
+              <Box 
+                alignItems="center"
+                display="flex"
+                justifyContent="center"
+                flexDirection="column"
+              >
+                <h2>Name: {selectedDevice.name}</h2>
+                <p>ID: {selectedDevice.id}</p>
+                <p>Location: {selectedDevice.location}</p>
+                <p>Active: {selectedDevice.active.toString()}</p>
+                <div><IOTTrafficCurrent deviceId={selectedDevice.id}/></div>
+                <DashboardDrawer device={selectedDevice}/>
+              </Box>
+
             </InfoWindow>
           )}
         </Map>

@@ -3,7 +3,8 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import axios from 'axios';
 import { Container } from "@mui/material";
 import Spinner from 'react-bootstrap/Spinner';
-
+import { PiecewiseColorLegend } from "@mui/x-charts/ChartsLegend";
+import { ChartsReferenceLine } from "@mui/x-charts/ChartsReferenceLine";
 const IOTTrafficPrediction = (props) => {
     // use props.deviceIdNo, pass in deviceIdNo from parent component (e.g. when clicked on in map)
     // const [deviceIdNo, setDeviceIdNo] = useState("402059");
@@ -22,10 +23,10 @@ const IOTTrafficPrediction = (props) => {
 
     useEffect(() => {
         getTrafficPrediction();
-    }, [])
+    }, [props.deviceIdNo])
     return(
         <Container>
-            <h4> Traffic Speed Prediction Device ID No. {props.deviceIdNo} </h4>
+            <h5> Traffic Speed Prediction Device ID No. {props.deviceIdNo} </h5>
             {speedPredictionValues === undefined ? 
                 <p>Error getting data</p>
                 : speedPredictionValues.length === 0 ?
@@ -49,21 +50,37 @@ const IOTTrafficPrediction = (props) => {
                         {
                             min: 0,
                             label: 'Speed (MPH)',
-                            scaleType: 'linear'
+                            scaleType: 'linear',
+                            colorMap: {
+                                type: 'piecewise',
+                                thresholds: [10,25,60],
+                                colors: ['#e60000', '#f07d02', '#ffff00', '#87cb54'],
+                            }
                         }
                     ]}
                     series={[
                         {
                             data: speedPredictionValues, 
                             scaleType: "linear",
-                            color: 'orange',
                             showMark: false,
                             label: "MPH"
                         },
                     ]}
-                    width={1200}
+                    width={790}
                     height={500}
-                />
+                    margin={{ top: 50, right: 20 }}
+                    slotProps={{ legend: { hidden: true } }}
+                    grid={{ horizontal: true }}
+                    >
+                    <PiecewiseColorLegend
+                        axisDirection="y"
+                        position={{ vertical: 'top', horizontal: 'middle' }}
+                        direction="row"
+                        padding={0}
+                        labelStyle={{ fontSize: 25 }}
+                    />
+                    <ChartsReferenceLine y={0} />
+                </LineChart>
             }
 
         </Container>
