@@ -14,7 +14,8 @@ const IOTTrafficPrediction = (props) => {
           const response = await axios.get(`/api/v1/iot/traffic/predictions/${props.deviceIdNo}`);
           const trafficPredictionData = response.data;
           setSpeedPredictionValues(trafficPredictionData.speedPredictionValues);
-          setTimestampValues(trafficPredictionData.predictionTimestamps);
+          const distinctTimestamps = trafficPredictionData.predictionTimestamps.map((timestamp, index) => {return `${index}: ${timestamp}`});
+          setTimestampValues(distinctTimestamps);
         } catch (error) {
           console.error("Error getting traffic prediction");
         }
