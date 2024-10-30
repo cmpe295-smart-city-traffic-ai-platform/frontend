@@ -72,6 +72,7 @@ const Home = () => {
   const [allDevices, setAllDevices] = useState([]);
   const [selectedValue, setSelectedValue] = useState('a');
   const [predictionDevices, setPredictionDevices] = useState([]);
+  const user_id = localStorage.getItem("user_id");
 
   //Google Map variables
   const [hoverId, setHoverId] = useState(null);
@@ -252,6 +253,9 @@ const Home = () => {
     getPredictionDevices();
   }, []);
   
+  if(user_id == null)
+    window.location = "/login"; 
+
   //IOT SERVICE TESTING
   return (
     <div>
