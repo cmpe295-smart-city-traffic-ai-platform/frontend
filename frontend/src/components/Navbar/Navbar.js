@@ -19,7 +19,6 @@ const NavigationBar = () => {
             {user_id !== null ? 
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="/home">Home</Nav.Link>
                         <Nav.Link href="/alerts">Alerts</Nav.Link>
                     </Nav>
                     <Nav>

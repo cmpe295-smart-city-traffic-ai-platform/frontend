@@ -22,7 +22,7 @@ const Login = () => {
         localStorage.setItem("lastName", "Doe");
         localStorage.setItem("firstName", "Jane");
         localStorage.setItem("user_id", "d04b59ff-4baf-47e2-986b-7a7d3e73091e");
-        window.location = "/home";
+        window.location = "/";
     }else if(email==="client@gmail.com" && password==="client"){
         localStorage.setItem("email", "client@gmail.com");
         localStorage.setItem("role", "client");
@@ -30,7 +30,7 @@ const Login = () => {
         localStorage.setItem("lastName", "Doe");
         localStorage.setItem("firstName", "John");
         localStorage.setItem("user_id", "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e")
-        window.location = "/home";
+        window.location = "/";
     }
     else{
         setWarningText(

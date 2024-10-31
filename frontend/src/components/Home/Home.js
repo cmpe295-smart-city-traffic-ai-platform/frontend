@@ -36,6 +36,7 @@ import  Stack  from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 //In Progress: Confifure when user is trafficagent vs client agent
 
+
 const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, setMarkerRef, id, ...advancedMarkerProps } =
     props;
@@ -62,6 +63,11 @@ const AdvancedMarkerWithRef = (props) => {
 };
 
 const Home = () => {
+  //If not logged in, sent user to login page
+  if (localStorage.getItem("user_id") === null){
+    window.location = "/login"
+  }
+
   //Homepage variables
   const [droneDevices, setDroneDevices] = useState([]);
   const [iotDevices, setIotDevices] = useState([]);
@@ -252,15 +258,13 @@ const Home = () => {
     //TEST USING PREDICTION DEVICES ONLY
     getPredictionDevices();
   }, []);
-  
-  if(user_id == null)
-    window.location = "/login"; 
+   
 
   //IOT SERVICE TESTING
   return (
     <div>
-      <h1>Home Page</h1>
-      <Stack alignItems="center" direction="row" spacing={60}>
+      <h3>Dashboard Page</h3>
+      <Stack alignItems="center" direction="row" spacing={20}>
         <Paper
           component="form"
           sx={{
@@ -337,7 +341,7 @@ const Home = () => {
       >
         <Map
           mapId={""}
-          style={{ width: "100vw", height: "80vh" }}
+          style={{ width: "auto", height: "70vh" }}
           defaultCenter={{ lat: 37.33548, lng: -121.893028 }}
           defaultZoom={12}
           gestureHandling={"greedy"}
