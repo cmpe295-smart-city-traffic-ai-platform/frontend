@@ -1,6 +1,6 @@
 import {React} from "react";
 
-const Alerts = ()=>  {
+const CCTV = ()=>  {
 
     const email = localStorage.getItem("email");
     const role =  localStorage.getItem("role");
@@ -12,7 +12,7 @@ const Alerts = ()=>  {
         window.location = "/login"; 
     return(
         <div>
-            <h1>Alerts Page</h1>
+            <h1>CCTV Station Management</h1>
             Email: {email}
             <br/>
             Role: {role}
@@ -26,4 +26,4 @@ const Alerts = ()=>  {
     );
 }
 
-export default Alerts;
+export default CCTV;
