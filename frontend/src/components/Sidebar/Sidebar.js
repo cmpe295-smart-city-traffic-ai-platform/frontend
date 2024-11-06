@@ -31,6 +31,8 @@ const Sidebar = () => {
                 <i className="fa-solid fa-table-columns me-2"></i> Dashboard
               </a>
             </li>
+            {role === "traffic" ?
+            <> 
             <li>
               <a href="/cctv" className="nav-link text-white">
                 <i className="fa-solid fa-camera me-2"></i> CCTV Camera
@@ -45,7 +47,7 @@ const Sidebar = () => {
               <a href="/iot" className="nav-link text-white">
                 <i className="fa-solid fa-wifi me-2"></i> IoT Manager
               </a>
-            </li>
+            </li></> : <></> }
           </ul>
         </div>
       </div>

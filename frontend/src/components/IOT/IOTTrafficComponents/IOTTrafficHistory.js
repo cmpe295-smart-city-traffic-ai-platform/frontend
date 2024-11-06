@@ -40,7 +40,7 @@ const IOTTrafficHistory = (props) => {
 
     useEffect(() => {
         getTrafficHistory();
-    }, [])
+    }, [props.deviceId])
     return(
         <Container>
             <h5> Traffic Speed History </h5>
