@@ -12,7 +12,8 @@ const IOTTrafficCurrent = (props) => {
     
     const getCurrentTraffic = async () => {
         try {
-          const response = await axios.get(`/api/v1/iot/traffic/${props.deviceId}`);
+          const response = await axios.get(`/api/v1/iot/traffic/${props.deviceId}`); //localhost
+          //const response = await axios.get(`/aws/api/v1/iot/traffic/${props.deviceId}`);//aws
           const trafficResults = JSON.parse(response.data.trafficData);
           setCurrentSpeed(trafficResults.flowSegmentData.currentSpeed);
         } catch (error) {

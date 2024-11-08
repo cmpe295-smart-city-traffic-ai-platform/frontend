@@ -19,11 +19,21 @@ const IOTTrafficHistory = (props) => {
     });
     const getTrafficHistory = async () => {
         try {
+            //localhost
           const response = await axios.get(`/api/v1/iot/traffic/history/${props.deviceId}`, {
             params: {
               limit: 200
             },
+          }); 
+          
+          /*
+          //aws
+          const response = await axios.get(`/aws/api/v1/iot/traffic/history/${props.deviceId}`, {
+            params: {
+              limit: 200
+            },
           });
+          */
           const trafficResults = response.data;
           const formattedTrafficResults = trafficResults.map(result => {
             return {
@@ -40,7 +50,7 @@ const IOTTrafficHistory = (props) => {
 
     useEffect(() => {
         getTrafficHistory();
-    }, [])
+    }, [props.deviceId])
     return(
         <Container>
             <h5> Traffic Speed History </h5>

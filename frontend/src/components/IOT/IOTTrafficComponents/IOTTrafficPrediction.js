@@ -12,7 +12,8 @@ const IOTTrafficPrediction = (props) => {
     const [timestampValues, setTimestampValues] = useState([]);
     const getTrafficPrediction= async () => {
         try {
-          const response = await axios.get(`/api/v1/iot/traffic/predictions/${props.deviceIdNo}`);
+          const response = await axios.get(`/api/v1/iot/traffic/predictions/${props.deviceIdNo}`); //localhost
+          //const response = await axios.get(`/aws/api/v1/iot/traffic/predictions/${props.deviceIdNo}`); //aws 
           const trafficPredictionData = response.data;
           setSpeedPredictionValues(trafficPredictionData.speedPredictionValues);
           const distinctTimestamps = trafficPredictionData.predictionTimestamps.map((timestamp, index) => {return `${index}: ${timestamp}`});
