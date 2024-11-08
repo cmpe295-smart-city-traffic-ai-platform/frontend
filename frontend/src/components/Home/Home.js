@@ -16,15 +16,14 @@ import {
   APIProvider,
   useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
-import iotImage from "../../images/iotImage.png";
-import cctvImage from "../../images/cctvImage.png";
-import droneImage3 from "../../images/droneImage3.png";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-
+import iotImage from "../../images/iotImage.png";
+import cctvImage from "../../images/cctvImage.png";
+import droneImage3 from "../../images/droneImage3.png";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -229,36 +228,37 @@ const Home = () => {
 
     //GET DEVICES BASED ON RADIO BUTTON SELECTED
     const getDevices = async () => {
-      let testData = [];
-      let url = '';
-      let url2 = '';
-      let userId = "";
-      
-      if (selectedValue === 'a'){
-        url = 'http://localhost:8080/api/v1/iot/predictionDevices';//IOT devices
-        userId = localStorage.getItem("user_id");
-        url2 = "http://localhost:8080/api/v1/iot";
-        const response = await axios.get(url);
-        testData = response.data;
-      } else if (selectedValue === 'b'){
-        url = '';//CCTV API
-        //Modify once connected to CCTV SERVICE
-        userId = localStorage.getItem("user_id")
-        testData = cctvData
-        
-      } else if (selectedValue === 'c'){
-        url = '';//Drones API
-        userId = localStorage.getItem("email");
-        /// //Modify once connected to DRONE SERVICE
-        testData = droneData
-        
-      }else{
-          url = '';//Alerts API
-          userId = localStorage.getItem("user_id");
-          /// //Modify once connected to ALERT SERVICE
-          testData = alertData
-        }
       try {
+          let testData = [];
+          let url = '';
+          let url2 = '';
+          let userId = "";
+          
+          if (selectedValue === 'a'){
+            url = 'http://localhost:8080/api/v1/iot/predictionDevices';//IOT devices local
+            userId = localStorage.getItem("user_id");
+            url2 = "http://localhost:8080/api/v1/iot";//specific devices
+            //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
+            const response = await axios.get(url);//change to url3 to test Aws connection
+            testData = response.data;
+          } else if (selectedValue === 'b'){
+            url = '';//CCTV API
+            //Modify once connected to CCTV SERVICE
+            userId = localStorage.getItem("user_id")
+            testData = cctvData
+            
+          } else if (selectedValue === 'c'){
+            url = '';//Drones API
+            userId = localStorage.getItem("email");
+            /// //Modify once connected to DRONE SERVICE
+            testData = droneData
+            
+          }else{
+              url = '';//Alerts API
+              userId = localStorage.getItem("user_id");
+              /// //Modify once connected to ALERT SERVICE
+              testData = alertData
+            }
           //const response = await axios.get(url); //TEST PREDICTION IOT DEVICES
           //const response = await axios.get(url3);//TEST IOT SERVICE HOSTED ON CLOUD
           /*
@@ -266,7 +266,8 @@ const Home = () => {
             params: {
               userId: userId,
             },
-          });*///TEST DEVICES FOR SPECIFIC USER
+          });*////TEST DEVICES FOR SPECIFIC USER
+          //testData =response.data///TEST DEVICES FOR SPECIFIC USER
           setAllDevices([]);
           if (testData && testData.length > 0){
             const formatedDevices = testData
