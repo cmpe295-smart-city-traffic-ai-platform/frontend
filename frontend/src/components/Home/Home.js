@@ -197,11 +197,42 @@ const Home = () => {
   ///IOT SESRVICE BACKEND
       
   useEffect(() => {
-    
+    // const getDevices = async () => {
+    //   try {
+    //     //get devices from user
+    //     const userId = "d04b59ff-4baf-47e2-986b-7a7d3e73091e";
+    //     //const userId2 = "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e";
+    //     const response = await axios.get("/api/v1/iot", {
+    //       params: {
+    //         userId: userId,
+    //       },
+    //     });
+    //     const formatedDevices = response.data
+    //       .map((item) => {
+    //         const [lat, long] = item.location
+    //           .replace("location:", "")
+    //           .split(",");
+    //         return {
+    //           ...item,
+    //           latitude: parseFloat(lat),
+    //           longitude: parseFloat(long),
+    //         };
+    //       })
+    //       .sort((a, b) => b.latitude - a.latitude)
+    //       .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
+        
+    //     setIotDevices(formatedDevices);
+    //     setZIndexSelected(formatedDevices.length);
+    //     setZIndexHover(formatedDevices.length + 1);
+    //   } catch (error) {
+    //     console.error("Error getting the IoT Devices");
+    //   }
+    // };
+    //getDevices();
     //GET PREDICTION DEVICES
     const getPredictionDevices = async() => {
       try{
-        const response = await axios.get("http://localhost:8080/api/v1/iot/predictionDevices");
+        const response = await axios.get("api/v1/iot/predictionDevices");
         const formatedDevices = response.data
           .map((item) => {
             const [lat, long] = item.location
@@ -235,9 +266,9 @@ const Home = () => {
           let userId = "";
           
           if (selectedValue === 'a'){
-            url = 'http://localhost:8080/api/v1/iot/predictionDevices';//IOT devices local
+            url = '/api/v1/iot/predictionDevices';//IOT devices local
             userId = localStorage.getItem("user_id");
-            url2 = "http://localhost:8080/api/v1/iot";//specific devices
+            url2 = "/api/v1/iot";//specific devices
             //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
             const response = await axios.get(url);//change to url3 to test Aws connection
             testData = response.data;

@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smart-city-traffic-frontend-ingress-controller
+  namespace: smart-city-traffic
+  annotations:
+    kubernetes.io/ingress.class: kong
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smart-city-traffic-frontend-service
+                port:
+                  number: 4000
