@@ -9,22 +9,19 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState("");
-  const [campus, setCampus] = useState("");
-  //const [isAdmin, setIsAdmin] = useState("");
+  const [role, setRole] = useState("traffic");
   const [warningText, setWarningText] = useState(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
     //console.log(email, password);
-    /*
+    /*Uncomment this section once backend is running on cloud
     axios
-      .post("/user/register", {
+      .post("/api/v1/dashboard/user/register", {
         email: email,
         password: password,
         firstName: firstName,
         lastName: lastName,
-        campus: campus,
         role: role,
       })
       .then((response) => {
@@ -32,20 +29,22 @@ const Register = () => {
 
         //setUser(response.data);
         setWarningText(null);
-        //localStorage.setItem("token", response.data.jwt);
-        //localStorage.setItem("userID", response.data.userID);
-        //localStorage.setItem("isAdmin", response.data.isAdmin);
-        //localStorage.setItem("userName", response.data.userName);
-        window.location = "/Login";
+        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("password", response.data.password);
+        localStorage.setItem("lastName", response.data.lastName);
+        localStorage.setItem("firstName", response.data.firstName);
+        localStorage.setItem("user_id", response.data.userId);
+        window.location = "/";
       })
       .catch((error) => {
         console.log(error);
         setWarningText(
           <Alert variant="danger">
-            Account already exist with the email provided
+            Account already exist with the email provided!
           </Alert>
         );
-      });*/
+      }); */
   }
 
   function handleLogin(event) {
@@ -56,7 +55,6 @@ const Register = () => {
   return (
     <div>
       <Container className="py-4">
-        {warningText}
         <div
           className="mx-auto mb24 p24 wmx3 bg-white bar-lg bs-xl mb24"
           style={{ width: "40%" }}
@@ -154,7 +152,6 @@ const Register = () => {
                 }}
                 aria-label="Default select example"
               >
-                <option>Choose Role</option>
                 <option value="traffic">Traffic Agent</option>
                 <option value="client">City Client</option>
               </Form.Select>
