@@ -8,13 +8,12 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState([]);
   const [warningText, setWarningText] = useState(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log(email, password);
-
+    //console.log(email, password);
+    
     if(email==="traffic@gmail.com" && password==="traffic"){
         localStorage.setItem("email", "traffic@gmail.com");
         localStorage.setItem("role", "traffic");
@@ -38,30 +37,33 @@ const Login = () => {
           );
     }
     
-    /* Endpoint to login
+    
+    /*
+    //Endpoint to login. 
+    //Uncomment this section once backend is running on cloud
     axios
-      .post("/user/login", {
+      .post("/api/v1/dashboard/user/login", {
         email: email,
         password: password,
       })
       .then((response) => {
-        setUser(response.data);
-        console.log(response.data[0].firstName);
+        //console.log(response.data);
         setWarningText(null);
         
-        localStorage.setItem("email", response.data[0].email);
-        localStorage.setItem("role", response.data[0].role);
-        localStorage.setItem("lName", response.data[0].lastName);
-        localStorage.setItem("fName", response.data[0].firstName);
-        localStorage.setItem("user_id", "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e")
+        localStorage.setItem("email", response.data.email);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("password", response.data.password);
+        localStorage.setItem("lastName", response.data.lastName);
+        localStorage.setItem("firstName", response.data.firstName);
+        localStorage.setItem("user_id", response.data.userId);
         window.location = "/";
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
         setWarningText(
           <Alert variant="danger">Wrong email and password combination</Alert>
         );
-      }); */
+      }); //*/
   }
   //console.log(user);
   function handleRegistration(event) {

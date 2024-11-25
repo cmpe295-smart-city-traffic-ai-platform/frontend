@@ -29,7 +29,7 @@ const DrawerContent = (props) => {
           <h4>CCTV Device ID: {props.device.id} </h4>
         </Stack>
         {props.TableDevice && <props.TableDevice device={props.device}/>}
-        <LiveFeed cctvLiveFeedUrl={props.device.url}/>
+        <LiveFeed cctvLiveFeedUrl={props.device.url} />
       </Box>
     )
   }else if(props.type==='c'){
