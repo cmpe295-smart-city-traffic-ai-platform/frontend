@@ -6,7 +6,6 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import NavigationBar from "../Navbar/Navbar";
 import axios from "axios";
 import {
   AdvancedMarker,
@@ -18,12 +17,8 @@ import {
 } from "@vis.gl/react-google-maps";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-import iotImage from "../../images/iotImage.png";
-import cctvImage from "../../images/cctvImage.png";
-import droneImage3 from "../../images/droneImage3.png";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -260,18 +255,15 @@ const Home = () => {
           } else if (selectedValue === 'b'){
             url = '';//CCTV API
             //Modify once connected to CCTV SERVICE
-            userId = localStorage.getItem("user_id")
             testData = cctvData
             
           } else if (selectedValue === 'c'){
             url = '';//Drones API
-            userId = localStorage.getItem("email");
             /// //Modify once connected to DRONE SERVICE
             testData = droneData
             
           }else{
               url = '';//Alerts API
-              userId = localStorage.getItem("user_id");
               /// //Modify once connected to ALERT SERVICE
               testData = alertData
             }
