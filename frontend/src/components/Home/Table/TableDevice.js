@@ -45,7 +45,7 @@ const TableDevice = (device) =>{
         <TableBody>
             <StyledTableRow>
               {tableValues.map((value, index) => (
-                <StyledTableCell key={index} align='right'>{value.toString()}</StyledTableCell>
+                <StyledTableCell key={index} align='right'>{value !== null ? value.toString() : "--"}</StyledTableCell>
               ))}
             </StyledTableRow>
         </TableBody>

@@ -181,8 +181,9 @@ const Home = () => {
                                   ...response1.data,
                                   ...response2.data,
                                 ]
+                                console.log(testData)
               } catch(error){
-                  testData=[]
+                  testData=[]//if error, set empty
               }
             }else{
               //CLIENT - RETURN ONLY PREDICT DEVICES
@@ -190,7 +191,7 @@ const Home = () => {
                   const response = await axios.get(url);
                   testData = response.data
               }catch(error){
-                testData = []
+                testData = []//if error, set empty
               }
             }
             
@@ -222,6 +223,7 @@ const Home = () => {
                     password: localStorage.getItem("password"),
                     role: r 
                     })
+                    //console.log(response.data)
                     //FORMAT RESPONSE
                     testData = response.data.map(drone => ({
                     id: drone.drone_id,
@@ -230,13 +232,30 @@ const Home = () => {
                     name: drone.drone_name
                   }))
                 } catch(error){
-                  testData = [];
+                  testData = [];//if error, set empty
                 }
               
           }else{
-              url = '';//Alerts API
+              url = '/api/v1/generateAlerts';
+              url2 = '/api/v1/alerts';//Alerts API
               /// //Modify once connected to ALERT SERVICE
-              testData = alertData
+              try{
+                const response = await axios.get(url)
+                //const response = await axios.get(url2)
+                testData = response.data
+                //console.log(testData)
+                //FORMAT RESPONSE
+                testData = response.data.map(alert => ({
+                  id: alert.id,
+                  location: alert.location,
+                  name: alert.type,
+                  active: true,
+                  message: alert.message,
+                  severity: alert.severity
+                }))
+              } catch(error){
+                  testData = [];//if error, set empty 
+              }
             }
           //const response = await axios.get(url); //TEST PREDICTION IOT DEVICES
           //const response = await axios.get(url3);//TEST IOT SERVICE HOSTED ON CLOUD
@@ -406,7 +425,7 @@ const Home = () => {
                   })`,
                 }}
               >
-                <PinColor deviceId={device.id} active={device.active} type={selectedValue}/>
+                <PinColor deviceId={device.id} active={device.active} type={selectedValue} severity={device.severity}/>
               </AdvancedMarkerWithRef>
             );
           })}
@@ -423,8 +442,14 @@ const Home = () => {
               >
                 <h2>Name: {selectedDevice.name}</h2>
                 <p>ID: {selectedDevice.id}</p>
+                {selectedValue==='d' &&
+                  <p>{selectedDevice.message}</p>//display alert message
+                }
                 <p>Location: {selectedDevice.location}</p>
-                <p>Active: {selectedDevice.active.toString()}</p>
+                {selectedValue!=='d' &&
+                  <p>Active: {selectedDevice.active.toString()}</p>//display only for devices that are not alerts
+                }
+                
                 {selectedValue==='a' &&
                   <div><IOTTrafficCurrent deviceId={selectedDevice.id}/></div>//display speed for iot
                 }
