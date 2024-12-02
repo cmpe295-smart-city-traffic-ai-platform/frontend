@@ -6,7 +6,7 @@ import IOTTrafficHistory from '../../IOT/IOTTrafficComponents/IOTTrafficHistory'
 import IOTTrafficPrediction from '../../IOT/IOTTrafficComponents/IOTTrafficPrediction';
 import IOTTrafficCurrent from '../../IOT/IOTTrafficComponents/IOTTrafficCurrent';
 import LiveFeed from '../Livefeed/Livefeed';
-
+import IOTAirHistory from '../../IOT/IOTAirComponents/IOTAirHistory';
 const DrawerContent = (props) => {
   if(props.type==='a'){
     return (
@@ -19,6 +19,7 @@ const DrawerContent = (props) => {
         {props.TableDevice && <props.TableDevice device={props.device}/>}
         <IOTTrafficHistory deviceId={props.device.id}/>
         {props.device.deviceIdNo !== null && <IOTTrafficPrediction deviceIdNo={props.device.deviceIdNo}/>}
+        {props.device.deviceIdNo !== null && <IOTAirHistory deviceIdNo={props.device.deviceIdNo}/>}
       </Box>
     )
   } else if(props.type==='b'){

@@ -33,6 +33,7 @@ import cctvData from './CCTVData.json';
 import droneData from './DroneData.json';
 import alertData from './AlertData.json';
 import PinColor from "./Pin/PinColor";
+import { Traffic } from "@mui/icons-material";
 
 const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, setMarkerRef, id, ...advancedMarkerProps } =
@@ -152,73 +153,9 @@ const Home = () => {
   const handleRadioValueChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  ///dashboard service backend
-  /*
-    useEffect(() => {
-      const getAllDevicesData = async () => {
-      try {
-        const [response1, response2, response3] = await Promise.all([
-          axios.get("http://localhost:8080/api/dashboard/iot"),
-          axios.get("http://localhost:8080/api/dashboard/cctv"),
-          axios.get("http://localhost:8080/api/dashboard/drone"),
-        ]);
-
-        const mergeAllDevices = [
-          ...response1.data,
-          ...response2.data,
-          ...response3.data
-        ]
-
-        const formatedDevices = mergeAllDevices
-          .sort((a, b) => b.latitude - a.latitude)
-          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-        setAllDevices(formatedDevices);
-        setZIndexSelected(formatedDevices.length);
-        setZIndexHover(formatedDevices.length + 1);
-        console.log(formatedDevices)
-      } catch (error) {
-        console.error("Error getting the IoT Devices");
-      }
-    };
-    getAllDevicesData();
-    
-    
-    //setAllDevices([...iotDevices, ...cctvDevices, ...droneDevices]);
-    //    console.log(allDevices);
-        }, []);
-      */
-  ///IOT SESRVICE BACKEND
       
   useEffect(() => {
     
-    //GET PREDICTION DEVICES
-    const getPredictionDevices = async() => {
-      try{
-        const response = await axios.get("http://localhost:8080/api/v1/iot/predictionDevices");
-        const formatedDevices = response.data
-          .map((item) => {
-            const [lat, long] = item.location
-              .replace("location:", "")
-              .split(",");
-            return {
-              ...item,
-              latitude: parseFloat(lat),
-              longitude: parseFloat(long),
-            };
-          })
-          .sort((a, b) => b.latitude - a.latitude)
-          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-        console.log(response);
-        setIotDevices(formatedDevices);
-        setZIndexSelected(formatedDevices.length);
-        setZIndexHover(formatedDevices.length + 1);
-      } catch{
-        console.error("Error getting the IoT PREDICTION Devices");
-      }
-    };
-    //TEST USING PREDICTION DEVICES ONLY
-    //getPredictionDevices();
-
     //GET DEVICES BASED ON RADIO BUTTON SELECTED
     const getDevices = async () => {
       try {
@@ -231,37 +168,71 @@ const Home = () => {
             url2 = '/api/v1/iot';//DEVICES CREATED BY AGENT
             if(localStorage.getItem("role")=='traffic'){
               //fetch data and merge response to one list
-              const [response1, response2] = await Promise.all([
-                axios.get(url),
-                axios.get(url2, {
-                  params: {
-                    userId: userId,
-                  },
-                }),
-              ]);
-              testData = [
-                ...response1.data,
-                ...response2.data,
-              ]
+              try{
+                  const [response1, response2] = await Promise.all([
+                                  axios.get(url),
+                                  axios.get(url2, {
+                                    params: {
+                                      userId: userId,
+                                    },
+                                  }),
+                                ]);
+                                testData = [
+                                  ...response1.data,
+                                  ...response2.data,
+                                ]
+              } catch(error){
+                  testData=[]
+              }
             }else{
               //CLIENT - RETURN ONLY PREDICT DEVICES
-              const response = await axios.get(url);
-              testData = response.data
-              //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
-              //const response = await axios.get(url);//change to url3 to test Aws connection
-              //testData = response.data;
+              try{
+                  const response = await axios.get(url);
+                  testData = response.data
+              }catch(error){
+                testData = []
+              }
             }
             
           } else if (selectedValue === 'b'){
             url = '';//CCTV API
             //Modify once connected to CCTV SERVICE
             testData = cctvData
+            testData = cctvData.map(cctv => ({
+              id: cctv.deviceId,
+              active: cctv.deviceStatus === true,
+              location: cctv.location,
+              name: cctv.address,
+              url: cctv.streamingVideoURL
+            }))
+            console.log(testData)
             
           } else if (selectedValue === 'c'){
-            url = '';//Drones API
-            /// //Modify once connected to DRONE SERVICE
-            testData = droneData
-            
+            /// Connect to drone service
+            //Client works, agent gives error
+            url = '/api/v1/droneScheduler/getdronesformap';//Drones API
+            let r = (localStorage.getItem("role") === "client" ? "client" : "agent");
+            console.log(r)
+            try {
+                  const response = await axios.post("/api/v1/droneScheduler/getdronesformap", {
+                    firstname: localStorage.getItem("firstName"),
+                    lastname: localStorage.getItem("lastName"),
+                    email: localStorage.getItem("email"),
+                    uuid: localStorage.getItem("user_id"),
+                    password: localStorage.getItem("password"),
+                    role: r 
+                    })
+                    //FORMAT RESPONSE
+                    testData = response.data.map(drone => ({
+                    id: drone.drone_id,
+                    active: drone.drone_status === 'Active',
+                    location: drone.location,
+                    name: drone.drone_name
+                  }))
+                } catch(error){
+                  testData = [];
+                }
+              
           }else{
               url = '';//Alerts API
               /// //Modify once connected to ALERT SERVICE
@@ -294,6 +265,11 @@ const Home = () => {
           setAllDevices(formatedDevices);
           setZIndexSelected(formatedDevices.length);
           setZIndexHover(formatedDevices.length + 1);
+      } else {
+        //CASE WHERE RETRIVED DATA IS EMPTY
+        setAllDevices([]);//
+        setZIndexHover(0);
+        setZIndexHover(0);
       }
       } catch (error) {
         console.error("Error getting the Selected Devices");
