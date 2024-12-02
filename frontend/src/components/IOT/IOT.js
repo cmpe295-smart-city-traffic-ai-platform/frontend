@@ -21,7 +21,7 @@ const IOT = () => {
     const [show, setShow] = useState(false);
     const [iotDevices, setIotDevices] = useState([]);
     // TODO user id is based on logged in user
-    const [userId, setUserId] = useState("d04b59ff-4baf-47e2-986b-7a7d3e73091e");
+    const [userId, setUserId] = useState(localStorage.getItem("user_id"));
 
     const [deviceName, setDeviceName] = useState("");
     const [deviceLocation, setDeviceLocation] = useState("");

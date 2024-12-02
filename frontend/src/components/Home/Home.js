@@ -6,7 +6,6 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import NavigationBar from "../Navbar/Navbar";
 import axios from "axios";
 import {
   AdvancedMarker,
@@ -18,12 +17,8 @@ import {
 } from "@vis.gl/react-google-maps";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
-import iotImage from "../../images/iotImage.png";
-import cctvImage from "../../images/cctvImage.png";
-import droneImage3 from "../../images/droneImage3.png";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -34,7 +29,6 @@ import DashboardDrawer from "./Drawer/DashboardDrawer";
 import IOTTrafficCurrent from "../IOT/IOTTrafficComponents/IOTTrafficCurrent";
 import  Stack  from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-//In Progress: Confifure when user is trafficagent vs client agent
 import cctvData from './CCTVData.json';
 import droneData from './DroneData.json';
 import alertData from './AlertData.json';
@@ -81,7 +75,6 @@ const Home = () => {
   const [allDevices, setAllDevices] = useState([]);
   const [selectedValue, setSelectedValue] = useState('a');
   const [predictionDevices, setPredictionDevices] = useState([]);
-  const user_id = localStorage.getItem("user_id");
 
   //Google Map variables
   const [hoverId, setHoverId] = useState(null);
@@ -263,30 +256,45 @@ const Home = () => {
           let testData = [];
           let url = '';
           let url2 = '';
-          let userId = "";
-          
-          if (selectedValue === 'a'){
-            url = '/api/v1/iot/predictionDevices';//IOT devices local
-            userId = localStorage.getItem("user_id");
-            url2 = "/api/v1/iot";//specific devices
-            //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
-            const response = await axios.get(url);//change to url3 to test Aws connection
-            testData = response.data;
+          let userId = localStorage.getItem("user_id")
+          if (selectedValue === 'a'){ //IOT DEVICES
+            url = '/api/v1/iot/predictionDevices';//IOT PREDICTION devices
+            url2 = '/api/v1/iot';//DEVICES CREATED BY AGENT
+            if(localStorage.getItem("role")=='traffic'){
+              //fetch data and merge response to one list
+              const [response1, response2] = await Promise.all([
+                axios.get(url),
+                axios.get(url2, {
+                  params: {
+                    userId: userId,
+                  },
+                }),
+              ]);
+              testData = [
+                ...response1.data,
+                ...response2.data,
+              ]
+            }else{
+              //CLIENT - RETURN ONLY PREDICT DEVICES
+              const response = await axios.get(url);
+              testData = response.data
+              //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
+              //const response = await axios.get(url);//change to url3 to test Aws connection
+              //testData = response.data;
+            }
+            
           } else if (selectedValue === 'b'){
             url = '';//CCTV API
             //Modify once connected to CCTV SERVICE
-            userId = localStorage.getItem("user_id")
             testData = cctvData
             
           } else if (selectedValue === 'c'){
             url = '';//Drones API
-            userId = localStorage.getItem("email");
             /// //Modify once connected to DRONE SERVICE
             testData = droneData
             
           }else{
               url = '';//Alerts API
-              userId = localStorage.getItem("user_id");
               /// //Modify once connected to ALERT SERVICE
               testData = alertData
             }
@@ -319,7 +327,7 @@ const Home = () => {
           setZIndexHover(formatedDevices.length + 1);
       }
       } catch (error) {
-        console.error("Error getting the IoT Devices");
+        console.error("Error getting the Selected Devices");
       }
     };
     getDevices(); 

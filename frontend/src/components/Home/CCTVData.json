@@ -7,7 +7,7 @@
         "name": "CCTV Camera 1",
         "updatedAt": "2024-10-18T03:29:00.228+00:00",
         "userId" : "d04b59ff-4baf-47e2-986b-7a7d3e73091e",
-        "url": "https://cwwp2.dot.ca.gov/vm/loc/d4/tvc01sr17saratogaroad.htm"
+        "url": "https://cwwp2.dot.ca.gov/vm/loc/d5/sr1sr183.htm"
     },{
         "active" : true,
         "createdAt" : "2024-10-18T03:29:00.228+00:00",
@@ -16,6 +16,6 @@
         "name": "CCTV Camera 2",
         "updatedAt": "2024-10-18T03:29:00.228+00:00",
         "userId" : "d04b59ff-4baf-47e2-986b-7a7d3e73091e",
-        "url": "https://cwwp2.dot.ca.gov/vm/loc/d4/tvc04sr17camdenav.htm"
+        "url": "https://cwwp2.dot.ca.gov/vm/loc/d5/sr1foothillblvd.htm"
     }
 ]
