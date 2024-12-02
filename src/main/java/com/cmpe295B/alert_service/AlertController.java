@@ -1,7 +1,5 @@
 package com.cmpe295B.alert_service;
 
-import com.cmpe295B.model.Device;
-import com.cmpe295B.model.TrafficData;
 import com.cmpe295B.model.Alert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -27,68 +26,56 @@ public class AlertController {
     @GetMapping("/generateAlerts")
     public ResponseEntity<String> generateAlerts() {
         try {
-            // Simulated device data
-            Device[] devices = new Device[] {
-                new Device("fc1bde95-ca92-47ab-9358-d98abc004394", "Device 1")
-            };
+            // Step 1: Call /getdronesformap API
+            String dronesUrl = "http://localhost:5001/api/v1/droneScheduler/getdronesformap";
 
-            for (Device device : devices) {
-                String trafficDataUrl = "http://aba100847c9be49a08d8cd8213be1f9a-1863731257.us-east-1.elb.amazonaws.com/api/v1/iot/traffic/history/" + device.getId();
-                ResponseEntity<TrafficData[]> trafficResponse = restTemplate.getForEntity(trafficDataUrl, TrafficData[].class);
-                TrafficData[] trafficDataArray = trafficResponse.getBody();
+            // Construct request body with "role"
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("role", "client"); // Replace "client" with the appropriate role if needed
 
-                // Debugging: Print the fetched traffic data
-                System.out.println("Traffic Data Array: " + Arrays.toString(trafficDataArray));
+            // Log the request body for debugging
+            System.out.println("Request URL: " + dronesUrl);
+            System.out.println("Request Body: " + requestBody);
 
-                if (trafficDataArray != null) {
-                    for (TrafficData trafficData : trafficDataArray) {
-                        // Check for traffic jams
-                        if (trafficData.getCurrentSpeed() < 25) {  
-                            Alert alert = new Alert(
-                                "Traffic Jam",
-                                "Low speed detected on device " + device.getName(),
-                                LocalDateTime.now(),
-                                "High",
-                                device.getId(),
-                                trafficData.getLocation()
-                            );
-                            alerts.add(alert);
-                        }
+            // Make the API call
+            ResponseEntity<List> response = restTemplate.postForEntity(dronesUrl, requestBody, List.class);
 
-                        // Check for road closures
-                        if (trafficData.getFlowSegmentData() != null && trafficData.getFlowSegmentData().isRoadClosure()) {  
-                            Alert alert = new Alert(
-                                "Road Closure",
-                                "Road near device " + device.getName() + " is closed.",
-                                LocalDateTime.now(),
-                                "Critical",
-                                device.getId(),
-                                trafficData.getLocation()
-                            );
-                            alerts.add(alert);
-                        }
+            // Log the response for debugging
+            System.out.println("Response: " + response.getBody());
 
-                        // Check for congestion based on speed difference
-                        if (trafficData.getFlowSegmentData() != null) {
-                            double freeFlowSpeed = trafficData.getFlowSegmentData().getFreeFlowSpeed();
-                            double currentSpeed = trafficData.getCurrentSpeed();
-                            double speedDiff = freeFlowSpeed - currentSpeed;
+            // Step 2: Process the drone data and generate alerts
+            List<Map<String, Object>> drones = response.getBody();
 
-                            if (speedDiff >= 10) {
-                                Alert alert = new Alert(
-                                    "Congestion Alert",
-                                    "Device " + device.getName() + " reports congestion.",
-                                    LocalDateTime.now(),
-                                    "Moderate",
-                                    device.getId(),
-                                    trafficData.getLocation()
-                                );
-                                alerts.add(alert);
-                            }
-                        }
-                    }
+            if (drones != null) {
+                for (Map<String, Object> drone : drones) {
+                    String droneId = (String) drone.get("drone_id");
+                    String location = (String) drone.get("location");
+                    String droneName = (String) drone.get("drone_name");
+
+                    // Create an alert for each drone
+                    Alert alert = new Alert(
+                            "Drone Alert",
+                            "Drone ID: " + droneId + " (" + droneName + ") detected at location: " + location,
+                            LocalDateTime.now(),
+                            "Info",
+                            droneId,
+                            location
+                    );
+                    alerts.add(alert);
                 }
             }
+
+            // Step 3: Add previous traffic alerts (dummy example)
+            Alert trafficAlert = new Alert(
+                    "Traffic Jam",
+                    "Low speed detected on highway",
+                    LocalDateTime.now(),
+                    "High",
+                    "fc1bde95-ca92-47ab-9358-d98abc004394",
+                    "37.333614,-122.049627"
+            );
+            alerts.add(trafficAlert);
+
             return ResponseEntity.ok("Alerts generated successfully");
         } catch (Exception e) {
             e.printStackTrace();
