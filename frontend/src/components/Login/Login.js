@@ -13,7 +13,8 @@ const Login = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     //console.log(email, password);
-    
+    //test localhost
+    /*
     if(email==="traffic@gmail.com" && password==="traffic"){
         localStorage.setItem("email", "traffic@gmail.com");
         localStorage.setItem("role", "traffic");
@@ -37,8 +38,8 @@ const Login = () => {
           );
     }
     
+    */
     
-    /*
     //Endpoint to login. 
     //Uncomment this section once backend is running on cloud
     axios

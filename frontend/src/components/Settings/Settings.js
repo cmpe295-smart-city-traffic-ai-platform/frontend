@@ -14,7 +14,7 @@ const Settings = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     //console.log(email, password); 
-    /* Uncomment this section once deployed in cloud 
+    // */Uncomment this section once deployed in cloud 
     axios
       .post("/api/v1/dashboard/user/update", {
         email: email,
@@ -46,7 +46,7 @@ const Settings = () => {
             Error!
           </Alert>
         );
-      }); */
+      }); //*/
   }
 
   function handleLogin(event) {

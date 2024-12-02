@@ -33,6 +33,7 @@ import cctvData from './CCTVData.json';
 import droneData from './DroneData.json';
 import alertData from './AlertData.json';
 import PinColor from "./Pin/PinColor";
+import { Traffic } from "@mui/icons-material";
 
 const AdvancedMarkerWithRef = (props) => {
   const { children, onMarkerClick, setMarkerRef, id, ...advancedMarkerProps } =
@@ -152,104 +153,9 @@ const Home = () => {
   const handleRadioValueChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  ///dashboard service backend
-  /*
-    useEffect(() => {
-      const getAllDevicesData = async () => {
-      try {
-        const [response1, response2, response3] = await Promise.all([
-          axios.get("http://localhost:8080/api/dashboard/iot"),
-          axios.get("http://localhost:8080/api/dashboard/cctv"),
-          axios.get("http://localhost:8080/api/dashboard/drone"),
-        ]);
-
-        const mergeAllDevices = [
-          ...response1.data,
-          ...response2.data,
-          ...response3.data
-        ]
-
-        const formatedDevices = mergeAllDevices
-          .sort((a, b) => b.latitude - a.latitude)
-          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-        setAllDevices(formatedDevices);
-        setZIndexSelected(formatedDevices.length);
-        setZIndexHover(formatedDevices.length + 1);
-        console.log(formatedDevices)
-      } catch (error) {
-        console.error("Error getting the IoT Devices");
-      }
-    };
-    getAllDevicesData();
-    
-    
-    //setAllDevices([...iotDevices, ...cctvDevices, ...droneDevices]);
-    //    console.log(allDevices);
-        }, []);
-      */
-  ///IOT SESRVICE BACKEND
       
   useEffect(() => {
-    // const getDevices = async () => {
-    //   try {
-    //     //get devices from user
-    //     const userId = "d04b59ff-4baf-47e2-986b-7a7d3e73091e";
-    //     //const userId2 = "e17c8a2d-5c3b-4f1a-9b6d-8c8d4f8a2b1e";
-    //     const response = await axios.get("/api/v1/iot", {
-    //       params: {
-    //         userId: userId,
-    //       },
-    //     });
-    //     const formatedDevices = response.data
-    //       .map((item) => {
-    //         const [lat, long] = item.location
-    //           .replace("location:", "")
-    //           .split(",");
-    //         return {
-    //           ...item,
-    //           latitude: parseFloat(lat),
-    //           longitude: parseFloat(long),
-    //         };
-    //       })
-    //       .sort((a, b) => b.latitude - a.latitude)
-    //       .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-        
-    //     setIotDevices(formatedDevices);
-    //     setZIndexSelected(formatedDevices.length);
-    //     setZIndexHover(formatedDevices.length + 1);
-    //   } catch (error) {
-    //     console.error("Error getting the IoT Devices");
-    //   }
-    // };
-    //getDevices();
-    //GET PREDICTION DEVICES
-    const getPredictionDevices = async() => {
-      try{
-        const response = await axios.get("api/v1/iot/predictionDevices");
-        const formatedDevices = response.data
-          .map((item) => {
-            const [lat, long] = item.location
-              .replace("location:", "")
-              .split(",");
-            return {
-              ...item,
-              latitude: parseFloat(lat),
-              longitude: parseFloat(long),
-            };
-          })
-          .sort((a, b) => b.latitude - a.latitude)
-          .map((dataItem, index) => ({ ...dataItem, zIndex: index }));
-        console.log(response);
-        setIotDevices(formatedDevices);
-        setZIndexSelected(formatedDevices.length);
-        setZIndexHover(formatedDevices.length + 1);
-      } catch{
-        console.error("Error getting the IoT PREDICTION Devices");
-      }
-    };
-    //TEST USING PREDICTION DEVICES ONLY
-    //getPredictionDevices();
-
+    
     //GET DEVICES BASED ON RADIO BUTTON SELECTED
     const getDevices = async () => {
       try {
@@ -262,41 +168,94 @@ const Home = () => {
             url2 = '/api/v1/iot';//DEVICES CREATED BY AGENT
             if(localStorage.getItem("role")=='traffic'){
               //fetch data and merge response to one list
-              const [response1, response2] = await Promise.all([
-                axios.get(url),
-                axios.get(url2, {
-                  params: {
-                    userId: userId,
-                  },
-                }),
-              ]);
-              testData = [
-                ...response1.data,
-                ...response2.data,
-              ]
+              try{
+                  const [response1, response2] = await Promise.all([
+                                  axios.get(url),
+                                  axios.get(url2, {
+                                    params: {
+                                      userId: userId,
+                                    },
+                                  }),
+                                ]);
+                                testData = [
+                                  ...response1.data,
+                                  ...response2.data,
+                                ]
+                                console.log(testData)
+              } catch(error){
+                  testData=[]//if error, set empty
+              }
             }else{
               //CLIENT - RETURN ONLY PREDICT DEVICES
-              const response = await axios.get(url);
-              testData = response.data
-              //let url3 = '/aws/api/v1/iot/predictionDevices'//AWS FETCH IOT Prediction DEVICES
-              //const response = await axios.get(url);//change to url3 to test Aws connection
-              //testData = response.data;
+              try{
+                  const response = await axios.get(url);
+                  testData = response.data
+              }catch(error){
+                testData = []//if error, set empty
+              }
             }
             
           } else if (selectedValue === 'b'){
             url = '';//CCTV API
             //Modify once connected to CCTV SERVICE
             testData = cctvData
+            testData = cctvData.map(cctv => ({
+              id: cctv.deviceId,
+              active: cctv.deviceStatus === true,
+              location: cctv.location,
+              name: cctv.address,
+              url: cctv.streamingVideoURL
+            }))
+            console.log(testData)
             
           } else if (selectedValue === 'c'){
-            url = '';//Drones API
-            /// //Modify once connected to DRONE SERVICE
-            testData = droneData
-            
+            /// Connect to drone service
+            //Client works, agent gives error
+            url = '/api/v1/droneScheduler/getdronesformap';//Drones API
+            let r = (localStorage.getItem("role") === "client" ? "client" : "agent");
+            console.log(r)
+            try {
+                  const response = await axios.post("/api/v1/droneScheduler/getdronesformap", {
+                    firstname: localStorage.getItem("firstName"),
+                    lastname: localStorage.getItem("lastName"),
+                    email: localStorage.getItem("email"),
+                    uuid: localStorage.getItem("user_id"),
+                    password: localStorage.getItem("password"),
+                    role: r 
+                    })
+                    //console.log(response.data)
+                    //FORMAT RESPONSE
+                    testData = response.data.map(drone => ({
+                    id: drone.drone_id,
+                    active: drone.drone_status === 'Active',
+                    location: drone.location,
+                    name: drone.drone_name
+                  }))
+                } catch(error){
+                  testData = [];//if error, set empty
+                }
+              
           }else{
-              url = '';//Alerts API
+              url = '/api/v1/generateAlerts';
+              url2 = '/api/v1/alerts';//Alerts API
               /// //Modify once connected to ALERT SERVICE
-              testData = alertData
+              try{
+                const response = await axios.get(url)
+                //const response = await axios.get(url2)
+                testData = response.data
+                //console.log(testData)
+                //FORMAT RESPONSE
+                testData = response.data.map(alert => ({
+                  id: alert.id,
+                  location: alert.location,
+                  name: alert.type,
+                  active: true,
+                  message: alert.message,
+                  severity: alert.severity
+                }))
+              } catch(error){
+                  testData = [];//if error, set empty 
+              }
             }
           //const response = await axios.get(url); //TEST PREDICTION IOT DEVICES
           //const response = await axios.get(url3);//TEST IOT SERVICE HOSTED ON CLOUD
@@ -325,6 +284,11 @@ const Home = () => {
           setAllDevices(formatedDevices);
           setZIndexSelected(formatedDevices.length);
           setZIndexHover(formatedDevices.length + 1);
+      } else {
+        //CASE WHERE RETRIVED DATA IS EMPTY
+        setAllDevices([]);//
+        setZIndexHover(0);
+        setZIndexHover(0);
       }
       } catch (error) {
         console.error("Error getting the Selected Devices");
@@ -461,7 +425,7 @@ const Home = () => {
                   })`,
                 }}
               >
-                <PinColor deviceId={device.id} active={device.active} type={selectedValue}/>
+                <PinColor deviceId={device.id} active={device.active} type={selectedValue} severity={device.severity}/>
               </AdvancedMarkerWithRef>
             );
           })}
@@ -478,8 +442,14 @@ const Home = () => {
               >
                 <h2>Name: {selectedDevice.name}</h2>
                 <p>ID: {selectedDevice.id}</p>
+                {selectedValue==='d' &&
+                  <p>{selectedDevice.message}</p>//display alert message
+                }
                 <p>Location: {selectedDevice.location}</p>
-                <p>Active: {selectedDevice.active.toString()}</p>
+                {selectedValue!=='d' &&
+                  <p>Active: {selectedDevice.active.toString()}</p>//display only for devices that are not alerts
+                }
+                
                 {selectedValue==='a' &&
                   <div><IOTTrafficCurrent deviceId={selectedDevice.id}/></div>//display speed for iot
                 }

@@ -52,7 +52,18 @@ const PinColor = (props) => {
             </Pin>
     
         )
-    }else {
+    }else if (props.type === 'd'){
+        return(
+            <Pin
+                background= {props.severity === "Info" ? ("#03AC13") : ("#e60000")}
+                glyphColor={"#000"}
+                borderColor={"#000"}
+                scale={1.3}
+            >
+                 <WarningAmberRoundedIcon/>
+            </Pin>
+        )
+    }else{
         return(
             <Pin
                 background= {props.active.toString() === "true" ? ("#03AC13") : ("#6F7378")}
@@ -60,7 +71,7 @@ const PinColor = (props) => {
                 borderColor={"#000"}
                 scale={1.3}
             >
-                {props.type !== 'd' ? <Image src={getImage(props.type)} width={25} height={25} roundedCircle/> : <WarningAmberRoundedIcon/>}
+                <Image src={getImage(props.type)} width={25} height={25} roundedCircle/>
             </Pin>
         )
     }

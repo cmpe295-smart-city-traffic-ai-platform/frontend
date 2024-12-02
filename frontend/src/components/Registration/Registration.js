@@ -15,7 +15,7 @@ const Register = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     //console.log(email, password);
-    /*Uncomment this section once backend is running on cloud
+    //Uncomment this section once backend is running on cloud
     axios
       .post("/api/v1/dashboard/user/register", {
         email: email,
@@ -44,7 +44,7 @@ const Register = () => {
             Account already exist with the email provided!
           </Alert>
         );
-      }); */
+      }); //*/
   }
 
   function handleLogin(event) {
