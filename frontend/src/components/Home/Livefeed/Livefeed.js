@@ -10,11 +10,14 @@ const Livefeed = (props) => {
 
     useEffect(() => {
         const startCounting = async () => {
-            try {
-                await axios.post('http://localhost:5000/count-cars', { url: props.cctvLiveFeedUrl });
-            } catch (error) {
-                console.error("There was an error starting the car counting:", error);
+            if(props.cctvLiveFeedUrl !== ""){
+                try {
+                    await axios.post('http://localhost:5000/count-cars', { url: props.cctvLiveFeedUrl });
+                } catch (error) {
+                    console.error("There was an error starting the car counting:", error);
+                }
             }
+
         };
 
         startCounting();
@@ -36,11 +39,17 @@ const Livefeed = (props) => {
     return (
         <div className="App">
             <h4>CCTV Live Feed</h4>
-            <p>Cars counted: <b>{totalCarCount}</b> </p>
-            {/* <iframe src={props.cctvLiveFeedUrl} title="Live Video" width="800" height="800" frameBorder="0" allowFullScreen></iframe> */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {frame && <img src={frame} alt="Processed Frame" style={{ width: '80vw', height: 'auto', maxWidth: '100%' }} /> }
-            </div>
+            {props.cctvLiveFeedUrl === "" ? 
+                <div><p>No Live Footage Available</p></div> 
+                :
+                <div>
+                    <p>Cars counted: <b>{totalCarCount}</b> </p>
+                    {/* <iframe src={props.cctvLiveFeedUrl} title="Live Video" width="800" height="800" frameBorder="0" allowFullScreen></iframe> */}
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {frame && <img src={frame} alt="Processed Frame" style={{ width: '80vw', height: 'auto', maxWidth: '100%' }} /> }
+                    </div>
+                </div>
+            }
         </div>
     );
 } 

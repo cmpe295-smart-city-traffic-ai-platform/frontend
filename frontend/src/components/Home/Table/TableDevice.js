@@ -29,32 +29,25 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const TableDevice = (device) =>{
+  const tableHeaders = Object.keys(device.device)
+  const tableValues = Object.values(device.device)
+  
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Name</StyledTableCell>
-            <StyledTableCell align="right">Location</StyledTableCell>
-            <StyledTableCell align="right">Created By</StyledTableCell>
-            <StyledTableCell align="right">Active</StyledTableCell>
-            <StyledTableCell align="right">Created</StyledTableCell>
-            <StyledTableCell align="right">DeviceIdNo</StyledTableCell>
+            {tableHeaders.map((header, index) => (
+              <StyledTableCell key={index} align='right'>{header}</StyledTableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          
-            <StyledTableRow key={device.device.name}>
-              <StyledTableCell component="th" scope="row">
-                {device.device.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">{device.device.location}</StyledTableCell>
-              <StyledTableCell align="right">{device.device.userId}</StyledTableCell>
-              <StyledTableCell align="right">{device.device.active.toString()}</StyledTableCell>
-              <StyledTableCell align="right">{device.device.createdAt}</StyledTableCell>
-              <StyledTableCell align="right">{device.device.deviceIdNo}</StyledTableCell>
+            <StyledTableRow>
+              {tableValues.map((value, index) => (
+                <StyledTableCell key={index} align='right'>{value !== null ? value.toString() : "--"}</StyledTableCell>
+              ))}
             </StyledTableRow>
-          
         </TableBody>
       </Table>
     </TableContainer>
