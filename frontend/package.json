@@ -1,8 +1,9 @@
 {
-  "name": "frontend",
+  "name": "frontend-smart-city-traffic",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@deck.gl/core": "^9.0.34",
     "@deck.gl/google-maps": "^9.0.34",
     "@deck.gl/layers": "^9.0.34",
@@ -38,7 +39,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:8080",
   "eslintConfig": {
     "extends": [
       "react-app",

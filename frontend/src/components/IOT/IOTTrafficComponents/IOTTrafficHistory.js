@@ -22,7 +22,7 @@ const IOTTrafficHistory = (props) => {
             //localhost
           const response = await axios.get(`/api/v1/iot/traffic/history/${props.deviceId}`, {
             params: {
-              limit: 200
+              limit: 100
             },
           }); 
           
@@ -92,7 +92,7 @@ const IOTTrafficHistory = (props) => {
                         },
                     ]}
                     //
-                    width={790}
+                    width={850}
                     height={500}
                     margin={{ top: 50, right: 20 }}
                     slotProps={{ legend: { hidden: true } }}

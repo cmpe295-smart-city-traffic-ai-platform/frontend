@@ -51,6 +51,7 @@ const IOTTrafficPrediction = (props) => {
                     yAxis={[
                         {
                             min: 0,
+                            max: 80,
                             label: 'Speed (MPH)',
                             scaleType: 'linear',
                             colorMap: {
@@ -68,7 +69,7 @@ const IOTTrafficPrediction = (props) => {
                             label: "MPH"
                         },
                     ]}
-                    width={790}
+                    width={850}
                     height={500}
                     margin={{ top: 50, right: 20 }}
                     slotProps={{ legend: { hidden: true } }}
