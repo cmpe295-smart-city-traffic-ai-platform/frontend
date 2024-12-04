@@ -211,7 +211,7 @@ const Home = () => {
           } else if (selectedValue === 'c'){
             /// Connect to drone service
             //Client works, agent gives error
-            url = 'http://100.26.248.255:5001/api/v1/droneScheduler/getdronesformap';//Drones API
+            url = 'https://100.26.248.255:5001/api/v1/droneScheduler/getdronesformap';//Drones API
             let r = (localStorage.getItem("role") === "client" ? "client" : "agent");
             console.log(r)
             try {
