@@ -18,13 +18,13 @@ const DRONE = () => {
         const iframe = document.getElementById("drone_app");
         iframe.contentWindow.postMessage(
             { email, role, lastN, firstN, user_id, password },
-            "http://100.26.248.255:5001"
+            "https://100.26.248.255:5001"
         );
     };
 
     return (
         <iframe
-            src="http://100.26.248.255:5001/"
+            src="https://100.26.248.255:5001/"
             style={{ width: "90%", height: "100%", border: "none" }}
             title="Secondary Project"
             id="drone_app"
