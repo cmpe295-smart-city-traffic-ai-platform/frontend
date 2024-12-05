@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');  // Connect to the Flask server
+const socket = io('http://100.26.248.255:5000');  // Connect to the Flask server
 
 const Livefeed = (props) => { 
     const [totalCarCount, setTotalCarCount] = useState(0);
@@ -12,7 +12,7 @@ const Livefeed = (props) => {
         const startCounting = async () => {
             if(props.cctvLiveFeedUrl !== ""){
                 try {
-                    await axios.post('http://localhost:5000/count-cars', { url: props.cctvLiveFeedUrl });
+                    await axios.post('http://100.26.248.255:5000/count-cars', { url: props.cctvLiveFeedUrl });
                 } catch (error) {
                     console.error("There was an error starting the car counting:", error);
                 }
