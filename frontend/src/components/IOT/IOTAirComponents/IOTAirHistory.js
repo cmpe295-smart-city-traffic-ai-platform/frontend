@@ -26,7 +26,9 @@ const IOTAirHistory = (props) => {
 
     const getAirDataHistory= async () => {
         try {
-          const response = await axios.get(`/api/v1/airdata/device/${props.deviceIdNo}`); //localhost
+            console.log(props.deviceIdNo)
+          const response = await axios.get(`/api/v1/airdata/device/${props.deviceIdNo}`);
+          console.log(response) //localhost
           //console.log(response.data[0].airData)
           const aqi = []
           const t = []
@@ -58,17 +60,17 @@ const IOTAirHistory = (props) => {
                 const f = airData.pollutants.find(pollutant => pollutant.code === 'so2' ).concentration.value;
                 so2.push(f) 
             }else{
-                //In case error, store 0 for all values except time.
-                aqi.push(0);
-                const t1 = x.airDataTimeRetrived;
-                const t2 = dateFormatter.format(new Date(t1));
-                t.push(t2);
-                co.push(0);
-                no2.push(0);
-                o3.push(0);
-                pm10.push(0);
-                pm25.push(0);
-                so2.push(0);
+                //In case airData is zero, skip and dont append data to lists
+                //aqi.push(0);
+                //const t1 = x.airDataTimeRetrived;
+                //const t2 = dateFormatter.format(new Date(t1));
+                //t.push(t2);
+                //co.push(0);
+                //no2.push(0);
+                //o3.push(0);
+                //pm10.push(0);
+                //pm25.push(0);
+                //so2.push(0);
             }
             
           })
@@ -165,7 +167,7 @@ const IOTAirHistory = (props) => {
                             label: "PM25 (µg/m³)"
                         },
                     ]}
-                    width={790}
+                    width={850}
                     height={500}
                     margin={{ top: 50, right: 20 }}
                     slotProps={{ legend: { hidden: true } }}
