@@ -236,11 +236,11 @@ const Home = () => {
                 }
               
           }else{
-              url = '/api/v1/generateAlerts';
-              url2 = '/api/v1/alerts';//Alerts API
+              url = '/api/v1/alert/generateAlerts';
+              url2 = '/api/v1/alert/generateAlerts';//Alerts API
               /// //Modify once connected to ALERT SERVICE
               try{
-                const response = await axios.get(url)
+                const response = await axios.get(url2)
                 //const response = await axios.get(url2)
                 testData = response.data
                 //console.log(testData)
@@ -366,6 +366,7 @@ const Home = () => {
                 label="DRONES"                          
                 control={<Radio color="success"/>}                            
               />
+              {localStorage.getItem("role")==="client" ? 
               <FormControlLabel
                 checked={selectedValue === 'd'}
                 onChange={handleRadioValueChange}              
@@ -378,7 +379,9 @@ const Home = () => {
                     color: red[600],
                   },
                 }}/>}                            
-              />
+              /> :
+                <p></p>
+               }
             </RadioGroup>
           </FormLabel>
       </FormControl>
