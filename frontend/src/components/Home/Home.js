@@ -196,18 +196,53 @@ const Home = () => {
             }
             
           } else if (selectedValue === 'b'){
-            url = '';//CCTV API
-            //Modify once connected to CCTV SERVICE
-            testData = cctvData
-            testData = cctvData.map(cctv => ({
-              id: cctv.deviceId,
-              active: cctv.deviceStatus === true,
-              location: cctv.location,
-              name: cctv.address,
-              url: cctv.streamingVideoURL
-            }))
-            console.log(testData)
-            
+            url = `/api/cctvs/my-devices/${userId}`;//CCTV API traffic agent
+            url2 = '/api/cctvs/active';//client
+            //Call pi based on role
+            if(localStorage.getItem("role")=='traffic'){
+              //TRAFFIC - RETURN ONLY DEVICES CREATED BY AGENT
+              try{
+                const response = await axios.get(url);
+                console.log(response.data)
+                testData = response.data.map(cctv => ({
+                  id: cctv.id,
+                  deviceId: cctv.deviceId,
+                  name: cctv.name,
+                  active: cctv.active,
+                  location: cctv.location,
+                  address: cctv.address,
+                  county: cctv.county,
+                  city: cctv.city,
+                  url: cctv.streamingVideoURL,
+                  createdAt: cctv.createdAt,
+                  updatedAt: cctv.updatedAt
+                }))
+                console.log(testData)
+              } catch(error){
+                  testData=[]//if error, set empty
+              }
+            }else{
+              //CLIENT - RETURN ONLY ACTIVE DEVICES
+              try{
+                  const response = await axios.get(url2);
+                  console.log(response.data)
+                  testData = response.data.map(cctv => ({
+                    id: cctv.id,
+                    deviceId: cctv.deviceId,
+                    name: cctv.name,
+                    active: cctv.active,
+                    location: cctv.location,
+                    address: cctv.address,
+                    county: cctv.county,
+                    city: cctv.city,
+                    url: cctv.streamingVideoURL,
+                    createdAt: cctv.createdAt,
+                    updatedAt: cctv.updatedAt
+                  }))
+              }catch(error){
+                testData = []//if error, set empty
+              }
+            } 
           } else if (selectedValue === 'c'){
             /// Connect to drone service
             //Client works, agent gives error
