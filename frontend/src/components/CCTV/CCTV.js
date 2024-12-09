@@ -36,7 +36,7 @@ const CCTV = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    //onst BASE_URL = "http://localhost:8080"; // Backend API base URL
+    //const BASE_URL = "http://localhost:8080"; // Backend API base URL
 
     // Handlers for form input changes
     const handleDeviceNameChange = (event) => setDeviceName(event.target.value);
@@ -69,7 +69,7 @@ const CCTV = () => {
     const createCctvDevice = async () => {
         try {
             const response = await axios.post(`/api/cctvs/add`, {
-                deviceId: cctvDevices.length + 1,
+                deviceId: deviceId,
                 name: deviceName,
                 location: deviceLocation,
                 address: deviceAddress,
